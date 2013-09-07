@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::resizeEvent(QResizeEvent* e)
 {
-	QRegion maskedRegion(0, -20, width(), 21 );
+	QRegion maskedRegion(0, -24, width(), 25 );
     setMask(maskedRegion);
 
 	m_child.resize(size());
