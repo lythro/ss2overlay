@@ -14,6 +14,7 @@
 #include <QPoint>
 #include <QRect>
 #include <QRegion>
+#include <QPalette>
 
 #include <iostream>
 #include <vector>
@@ -31,13 +32,13 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
 {
-	
+
 	setAttribute(Qt::WA_TranslucentBackground, true ); // important: before! clickthrough!
 	setStyleSheet( "background: transparent;" );
 
 	// set window-click-through
 #if _WIN32
-	setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+	setWindowFlags(Qt::WindowStaysOnTopHint);
 
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
@@ -107,8 +108,15 @@ void MainWindow::updateOverlay()
 
 void MainWindow::paintEvent(QPaintEvent* e)
 {
-	// TODO draw _everything_ in this method.
+	// apply stylesheet
+	QStyleOption opt;
+	opt.init(this);
+	
 	QPainter p(this);
+	style()->drawPrimitive(QStyle::PE_Widget, &opt, &p, this);
+
+
+	// TODO draw _everything_ in this method.
 	p.setPen( QColor( 255, 255, 0 ) );
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
