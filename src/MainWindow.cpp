@@ -34,6 +34,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	
 	
 
+	setAttribute(Qt::WA_TranslucentBackground, true ); // important: before! clickthrough!
+	setStyleSheet( "background: transparent;" );
+
+
 	// set window-click-through
 #if _WIN32
 	setWindowFlags(Qt::WindowStaysOnTopHint); // | Qt::FramelessWindowHint);
@@ -49,8 +53,6 @@ MainWindow::MainWindow(QWidget *parent) :
 							ShapeInput, 0, 0, region.handle(), ShapeSet );
 #endif
 
-	setAttribute(Qt::WA_TranslucentBackground, true ); 
-	setStyleSheet( "background: transparent;" );
 
 	// debug
 	m_debugLabel = new QLabel();
