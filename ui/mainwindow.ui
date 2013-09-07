@@ -19,9 +19,6 @@
   <property name="windowTitle">
    <string>ss2overlay</string>
   </property>
-  <property name="styleSheet">
-   <string notr="true">background:transparent;</string>
-  </property>
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout_2"/>
   </widget>

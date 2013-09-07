@@ -24,6 +24,7 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 
 	vector<QPoint> v;
 
+	QColor comp( 114, 118, 123 );
 
 	for (int dx = -range; dx < range; dx++)
 	{
@@ -42,6 +43,7 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 			QColor c( rgb );
 
 			// well... which points do we accept?
+			if (c == comp) v.push_back( p );
 
 		}
 	}

@@ -1,6 +1,8 @@
 #include "MainWindow.h"
 #include "ui_mainwindow.h"
 
+#include "sleep.h"
+
 #include "ColorClusterFinder.h"
 #include "ShootingAngleFinder.h"
 
@@ -26,23 +28,28 @@ using namespace std;
 #endif
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
+    QMainWindow(parent), ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+	ui->setupUi(this);
 	
-	setWindowFlags(Qt::WindowStaysOnTopHint);
-	setAttribute(Qt::WA_TranslucentBackground, true ); 
+	
 
 	// set window-click-through
 #if _WIN32
+	setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 	SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT);
 #else
+	setWindowFlags(Qt::WindowStaysOnTopHint);
+
 	QRegion region;
 	XShapeCombineRegion( QX11Info::display(), winId(), 
 							ShapeInput, 0, 0, region.handle(), ShapeSet );
 #endif
+
+	setAttribute(Qt::WA_TranslucentBackground, true ); 
 
 	// debug
 	m_debugLabel = new QLabel();
@@ -58,20 +65,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::updateOverlay()
 {
-	static bool check = true;
-	if (check)
-	{
-		cout << "clear" << endl;
-		m_debugPoints.clear();
-		repaint();
-		check = false;
-		return;
-	}
-	else check = true;
+	// clear for a free view when taking the screenshot
+	vector<QPoint> save = m_debugPoints;
+
+	m_debugPoints.clear();
+	repaint();
+	Sleep(100);
 
 	QRect g = geometry(); // client area geometry
 	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
 					g.x(), g.y(), g.width(), g.height() );
+
+	m_debugPoints = save;
+	repaint();
 
 	m_debugLabel->setPixmap( pic );
 
@@ -95,7 +101,6 @@ void MainWindow::updateOverlay()
 	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
 
 
-	cout << "fill" << endl;
 	repaint(); // force repaint
 }
 
