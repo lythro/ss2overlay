@@ -11,6 +11,7 @@ INCLUDE (${QT_USE_FILE})
 SET ( UI_sources
 	# all your .ui files
 	../ui/mainwindow.ui
+	../ui/childwindow.ui
 )
   	
 QT4_WRAP_UI ( UI_headers ${UI_sources})
@@ -21,6 +22,7 @@ SET ( App_sources
 	main.cpp
 
 	MainWindow.cpp
+	ChildWindow.cpp
 
 	ColorClusterFinder.cpp
 	ShootingAngleFinder.cpp
@@ -31,6 +33,7 @@ QT4_WRAP_CPP ( MOC_headers
 	# (the ones using Q_OBJECT macro)
 
 	../include/MainWindow.h
+	../include/ChildWindow.h
 )
 
 

@@ -1,11 +1,15 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "ChildWindow.h"
+#include "ui_mainwindow.h"
+
 #include <QMainWindow>
 #include <QPixmap>
 #include <QLabel>
 #include <QTimer>
 #include <QPoint>
+#include <QMoveEvent>
 
 #include <vector>
 using std::vector;
@@ -22,21 +26,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
 
-private slots:
-	void updateOverlay();
-
 private:
-	void paintEvent(QPaintEvent*);
+	// to let the child follow me!
+	void moveEvent(QMoveEvent*);
+	void resizeEvent(QResizeEvent*);
+
+	// exit properly
+	void closeEvent(QCloseEvent*);
+
     Ui::MainWindow *ui;
 
-	// Debug
-	QLabel* m_debugLabel;
-
-	// refresh-rate
-	QTimer m_timer;
-
-	// data to display
-	vector<QPoint> m_debugPoints;
+	ChildWindow m_child;
 };
 
 #endif // MAINWINDOW_H
