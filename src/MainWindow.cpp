@@ -13,6 +13,7 @@
 #include <QRgb>
 #include <QPoint>
 #include <QRect>
+#include <QRegion>
 
 #include <iostream>
 #include <vector>
@@ -30,13 +31,9 @@ using namespace std;
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent), ui(new Ui::MainWindow)
 {
-	ui->setupUi(this);
 	
-	
-
 	setAttribute(Qt::WA_TranslucentBackground, true ); // important: before! clickthrough!
 	setStyleSheet( "background: transparent;" );
-
 
 	// set window-click-through
 #if _WIN32
@@ -53,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 							ShapeInput, 0, 0, region.handle(), ShapeSet );
 #endif
 
+	ui->setupUi(this);
 
 	// debug
 	m_debugLabel = new QLabel();
