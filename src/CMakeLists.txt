@@ -23,6 +23,7 @@ SET ( App_sources
 	MainWindow.cpp
 
 	ColorClusterFinder.cpp
+	ShootingAngleFinder.cpp
 )
 
 QT4_WRAP_CPP ( MOC_headers

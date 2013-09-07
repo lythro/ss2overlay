@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include "ColorClusterFinder.h"
+#include "ShootingAngleFinder.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -34,6 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// set window-click-through
 #if _WIN32
+	setWindowFlags(Qt::FramelessWindowHint);
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 	SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT);
@@ -68,11 +70,20 @@ void MainWindow::updateOverlay()
 	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
 	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
 
-	m_debugPoints = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb() );
 
-	vector<QPoint> tmp = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
+	m_debugPoints = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
 
+	vector<QPoint> tmp;
+	if (m_debugPoints.size() > 0)
+	{
+		tmp = ShootingAngleFinder::findAnglePoints( &pic, m_debugPoints[0] );
+
+		m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
+	}
+
+	tmp = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb() );
 	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
+
 
 	repaint(); // force repaint
 }
