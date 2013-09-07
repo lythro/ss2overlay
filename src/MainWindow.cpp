@@ -36,7 +36,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// set window-click-through
 #if _WIN32
-	setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
+	setWindowFlags(Qt::WindowStaysOnTopHint); // | Qt::FramelessWindowHint);
 
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
@@ -50,6 +50,7 @@ MainWindow::MainWindow(QWidget *parent) :
 #endif
 
 	setAttribute(Qt::WA_TranslucentBackground, true ); 
+	setStyleSheet( "background: transparent;" );
 
 	// debug
 	m_debugLabel = new QLabel();
