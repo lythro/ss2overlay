@@ -51,7 +51,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	// setup timer
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
 	//m_timer.start( 5000 );
-	m_timer.start( 100 );
+	m_timer.start( 1000 );
 }
 
 
@@ -65,10 +65,14 @@ void MainWindow::updateOverlay()
 	m_debugLabel->setPixmap( pic );
 
 
-	//QColor color( 4, 153, 4 ); // player-tank-green
-	QColor color( 203, 0, 0 ); // enemy-tank-red
+	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
+	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
 
-	m_debugPoints = ColorClusterFinder::findCluster( &pic, color.rgb() );
+	m_debugPoints = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb() );
+
+	vector<QPoint> tmp = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
+
+	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
 
 	repaint(); // force repaint
 }
@@ -81,6 +85,8 @@ void MainWindow::paintEvent(QPaintEvent* e)
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
+		cout << "Cluster at: " << m_debugPoints[i].x() << ","
+				<< m_debugPoints[i].y() << endl;
 		p.drawPoint( m_debugPoints[i] );
 	}
 	p.end();
