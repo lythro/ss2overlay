@@ -22,12 +22,8 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 	int width = img.size().width();
 	int height = img.size().height();
 
-
-	QColor compare( 255, 255, 255 );
-
 	vector<QPoint> v;
 
-	int mindist = 100000000;
 
 	for (int dx = -range; dx < range; dx++)
 	{
@@ -45,23 +41,10 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 			QRgb rgb = img.pixel( p );
 			QColor c( rgb );
 
-			int dr = c.red() - compare.red();
-			int dg = c.green() - compare.green();
-			int db = c.blue() - compare.blue();
+			// well... which points do we accept?
 
-			int dist = dr*dr + dg*dg + db*db;
-
-			mindist = dist < mindist ? dist : mindist;
-
-			//if (c == compare)
-			if (dist < 100)
-			{
-				v.push_back( p );
-			}
 		}
 	}
-
-	cout << " mindist: " << mindist << endl;
 
 	return v;
 }

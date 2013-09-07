@@ -26,16 +26,15 @@ using namespace std;
 #endif
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent), ui(new Ui::MainWindow)
+    QMainWindow(parent, Qt::FramelessWindowHint), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
 	
 	setWindowFlags(Qt::WindowStaysOnTopHint);
-	setAttribute(Qt::WA_TranslucentBackground ,true ); 
+	setAttribute(Qt::WA_TranslucentBackground, true ); 
 
 	// set window-click-through
 #if _WIN32
-	setWindowFlags(Qt::FramelessWindowHint);
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
 	SetWindowLong(hwnd, GWL_EXSTYLE, styles | WS_EX_TRANSPARENT);
@@ -59,8 +58,18 @@ MainWindow::MainWindow(QWidget *parent) :
 
 void MainWindow::updateOverlay()
 {
-	QRect g = geometry(); // client area geometry
+	static bool check = true;
+	if (check)
+	{
+		cout << "clear" << endl;
+		m_debugPoints.clear();
+		repaint();
+		check = false;
+		return;
+	}
+	else check = true;
 
+	QRect g = geometry(); // client area geometry
 	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
 					g.x(), g.y(), g.width(), g.height() );
 
@@ -69,6 +78,7 @@ void MainWindow::updateOverlay()
 
 	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
 	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
+
 
 
 	m_debugPoints = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
@@ -85,6 +95,7 @@ void MainWindow::updateOverlay()
 	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
 
 
+	cout << "fill" << endl;
 	repaint(); // force repaint
 }
 
