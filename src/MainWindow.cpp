@@ -35,7 +35,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	// delete the content
-	QRegion maskedRegion(0, -20, width(), 21 );
+	QRegion maskedRegion(0, -24, width(), 25 );
     setMask(maskedRegion);
 
 	
