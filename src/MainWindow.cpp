@@ -37,7 +37,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	// set window-click-through
 #if _WIN32
-	setWindowFlags(Qt::WindowStaysOnTopHint); // | Qt::FramelessWindowHint);
+	setWindowFlags(Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint);
 
 	HWND hwnd = (HWND) winId();
 	LONG styles = GetWindowLong(hwnd, GWL_EXSTYLE);
