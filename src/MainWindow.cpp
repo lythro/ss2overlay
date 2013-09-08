@@ -55,7 +55,7 @@ void MainWindow::resizeEvent(QResizeEvent* e)
 
 void MainWindow::moveEvent(QMoveEvent* e)
 {
-	QRect g = frameGeometry();
+	QRect g = geometry();
 	m_child.move( g.x(), g.y() );
 }
 

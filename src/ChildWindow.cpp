@@ -158,6 +158,12 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 		QPoint drawPos = t.pos - QPoint( 20, -30 );
 
+		if (drawPos.x() < 10) drawPos.rx() = 10;
+		if (drawPos.x() > width() - 60) drawPos.rx() = width() - 60;
+
+		if (drawPos.y() > height() - 30) drawPos.ry() = t.pos.y() - 30;
+
+
 		p.drawText( drawPos, QString( "Vel.: " ) + QString::number( t.velocity ) );
 		drawPos.ry() += 10;
 

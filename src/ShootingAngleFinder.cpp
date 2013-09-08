@@ -22,6 +22,7 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 		}
 		ok = true;
 
+		/*
 		int dx = 0;
 		int dy = 0;
 		// build one big vector-sum
@@ -33,10 +34,58 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 
 		// calc the angle
 		float angle = atan2( dy, -dx ) * (180./PI) + 180;
+		*/
 
-		// TODO mean derivation would be nice
+		// different approach: weight the possible angles!
+		int granularity = 1;
+		vector<int> angle;
+		for (int i = 0; i < 360 * granularity; i++) angle.push_back( 0 );
 
-		return angle+1; // dont ask me why ;-)
+		for (int i = 0; i < points.size(); i++)
+		{
+			int dx = points[i].x() - origin.x();
+			int dy = points[i].y() - origin.y();
+			
+			float fangle = atan2( dy, -dx ) * (180./PI) + 180;
+
+			int rounded = (int) ((fangle*granularity) + 0.5);
+			if (rounded == 360 * granularity) rounded = 360*granularity - 1;
+
+			// vote!
+			angle[rounded] += 1;
+		}
+
+		// find the highest rating
+		int maxCount = 0;
+		for (int i = 0; i < 360 * granularity; i++)
+		{
+			if (angle[i] > maxCount) maxCount = angle[i];
+		}
+
+		cout << "maxVotings: " << maxCount << endl;
+
+		// accept all angles with at least 60% of maxCount votings
+		int minCount = (int) (0.6 * maxCount);
+
+		cout << "minNeeded: " << minCount << endl;
+
+		// mean of all acceptable angles
+		float mean = 0;
+		float used = 0;
+		for (int i = 0; i < 360 * granularity; i++)
+		{
+			if (angle[i] > minCount)
+			{
+				used++;
+				mean += i;
+			}
+		}
+
+		cout << "used: " << used << endl;
+
+		mean = mean / (granularity * used);
+
+		return mean;
 }
 
 int ShootingAngleFinder::calculatePower(int dx, int dy, float angle, int &miss)
