@@ -9,7 +9,7 @@ using std::cout;
 using std::endl;
 
 #define PI 3.141592653589793
-#define GRAVITY -9.460022
+#define GRAVITY -9.23 /* TODO calc a better value... */
 
 float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 {
