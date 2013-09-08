@@ -57,26 +57,15 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	// setup timer
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
-	//m_timer.start( 5000 );
 	m_timer.start( 1000 );
 }
 
 
 void ChildWindow::updateOverlay()
 {
-	// clear for a free view when taking the screenshot
-	vector<QPoint> save = m_debugPoints;
-
-	m_debugPoints.clear();
-	repaint();
-	Sleep(100);
-
 	QRect g = geometry(); // client area geometry
 	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
 					g.x(), g.y(), g.width(), g.height() );
-
-	m_debugPoints = save;
-	repaint();
 
 	m_debugLabel->setPixmap( pic );
 	
@@ -91,7 +80,8 @@ void ChildWindow::updateOverlay()
 		tmp = ShootingAngleFinder::findAnglePoints( &pic, m_debugPoints[0] );
 
 		m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
-	}
+	} else 
+		cout << "no origin!" << endl;
 
 	tmp = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb() );
 	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
@@ -107,12 +97,12 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 	// TODO draw _everything_ in this method.
 	p.setPen( QColor( 255, 255, 0 ) );
 
-	p.drawLine( 0, 0, 100, 100 );
+	cout << "to draw: " << m_debugPoints.size() << endl;
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
-		cout << "Cluster at: " << m_debugPoints[i].x() << ","
-				<< m_debugPoints[i].y() << endl;
+		//cout << "Cluster at: " << m_debugPoints[i].x() << ","
+		//		<< m_debugPoints[i].y() << endl;
 		p.drawPoint( m_debugPoints[i] );
 	}
 	p.end();
