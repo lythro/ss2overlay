@@ -24,7 +24,16 @@ vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color )
 
 			QColor rc( rgb );
 
-			if (rc == cc)
+			int dr = rc.red() - cc.red();
+			int dg = rc.green() - cc.green();
+			int db = rc.blue() - cc.blue();
+
+			dr *= dr < 0 ? -1 : 1;
+			dg *= dg < 0 ? -1 : 1;
+			db *= db < 0 ? -1 : 1;
+
+			if (dr + dg + db < 10)
+			//if (rc == cc)
 			{
 				// find all the correct points
 				//points.push_back( QPoint( x, y ) );
@@ -56,11 +65,11 @@ vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color )
 			// only if not already clustered!
 			if (points[j].cluster == -1)
 			{
-				// and distance < 20 ?
+				// and distance < 30 ?
 				int dx = points[j].p.x() - points[i].p.x();
 				int dy = points[j].p.y() - points[i].p.y();
 
-				if ((dx*dx + dy*dy) < 20*20)
+				if ((dx*dx + dy*dy) < 30*30)
 				{
 					points[j].cluster = points[i].cluster;
 				}

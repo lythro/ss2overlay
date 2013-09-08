@@ -27,19 +27,20 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 	for (int dx = -range; dx < range; dx++)
 	{
 		int x = origin.x() + dx;
-		if (x < 00) continue;
-		if (x >= width) break;
+		if (x < 5) continue;
+		if (x > width-5) break;
 
 		for (int dy = -range; dy < range; dy++)
 		{
 			// skip my user-name-area! evil white name!
 			if ( -20 < dx && dx < 20 )
-				if ( -50 < dy && dy < -40 )
+				if ( -40 < dy && dy < -25 )
 					continue;
+
 			//
 			int y = origin.y() + dy;
 			if (y < 30) continue; // cut the top - titlebar!
-			if (y >= height) break;
+			if (y > height-5) break;
 
 			QPoint p( x, y );
 			QRgb rgb = img.pixel( p );
