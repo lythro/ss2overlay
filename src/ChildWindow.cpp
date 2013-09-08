@@ -16,6 +16,7 @@
 #include <QRegion>
 #include <QPalette>
 
+#include <cmath>
 #include <iostream>
 #include <vector>
 using namespace std;
@@ -51,9 +52,11 @@ ChildWindow::ChildWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	// debug
-	m_debugLabel = new QLabel();
-	m_debugLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-	m_debugLabel->show();
+	//m_debugLabel = new QLabel();
+	//m_debugLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+	//m_debugLabel->show();
+
+	m_angle = 0;
 
 	// setup timer
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
@@ -66,25 +69,65 @@ void ChildWindow::updateOverlay()
 	QRect g = geometry(); // client area geometry
 	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
 					g.x(), g.y(), g.width(), g.height() );
-
-	m_debugLabel->setPixmap( pic );
+	
 	
 	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
 	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
 
-	m_debugPoints = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
+	m_debugPoints.clear();
+	m_enemyTargetInfos.clear();
 
-	vector<QPoint> tmp;
-	if (m_debugPoints.size() > 0)
+	vector<QPoint> my_position = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
+
+	if (my_position.size() > 1 || my_position.empty())
 	{
-		tmp = ShootingAngleFinder::findAnglePoints( &pic, m_debugPoints[0] );
+		cout << "player position not distinct" << endl;
+	}
+	else
+	{
+		m_playerPosition = my_position[0];
+		m_debugPoints.push_back( my_position[0] );
 
-		m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
-	} else 
-		cout << "no origin!" << endl;
+		bool ok;
+		float angle = ShootingAngleFinder::findAngle( &pic, my_position[0], ok );
 
-	tmp = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb() );
-	m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
+		//vector<QPoint> tmp = ShootingAngleFinder::findAnglePoints( &pic, my_position[0] );
+		//m_debugPoints.insert( m_debugPoints.end(), tmp.begin(), tmp.end() );
+
+		if (ok)
+		{
+			vector <QPoint> enemies = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb(), m_playerPosition );
+			
+			m_debugPoints.insert( m_debugPoints.end(), enemies.begin(), enemies.end() );
+
+			m_angle = (int)(angle + 0.5);
+
+			cout << "angle: " << m_angle << endl;
+
+			for (int i = 0; i < enemies.size(); i++)
+			{
+				int dx = enemies[i].x() - my_position[0].x();
+				int dy = enemies[i].y() - my_position[0].y();
+
+				int miss = -1;
+				int power = ShootingAngleFinder::calculatePower( dx, dy, m_angle, miss );
+
+				cout << "for enemy " << i << " : " << power << ", with miss: " << miss << endl;
+
+				TargetInfo t;
+				t.pos = enemies[i];
+				t.velocity = power;
+				t.miss = miss;
+
+				m_enemyTargetInfos.push_back( t );
+			}
+		}
+		else
+		{
+			cout << "couldn't find shooting angle" << endl;
+		}
+	}
+
 
 
 	repaint(); // force repaint
@@ -93,11 +136,9 @@ void ChildWindow::updateOverlay()
 void ChildWindow::paintEvent(QPaintEvent* e)
 {
 	QPainter p(this);
-
-	// TODO draw _everything_ in this method.
 	p.setPen( QColor( 255, 255, 0 ) );
 
-	cout << "to draw: " << m_debugPoints.size() << endl;
+	//cout << "to draw: " << m_debugPoints.size() << endl;
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
@@ -105,6 +146,25 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 		//		<< m_debugPoints[i].y() << endl;
 		p.drawPoint( m_debugPoints[i] );
 	}
+
+	// draw found angle at players position
+	QPoint pPos = m_playerPosition - QPoint( 20, -20 );
+	p.drawText( pPos, QString( "Angle: " ) + QString::number( m_angle ) );
+
+	// draw target infos!
+	for (int i = 0; i < m_enemyTargetInfos.size(); i++)
+	{
+		TargetInfo t = m_enemyTargetInfos[i];
+
+		QPoint drawPos = t.pos - QPoint( 20, -30 );
+
+		p.drawText( drawPos, QString( "Vel.: " ) + QString::number( t.velocity ) );
+		drawPos.ry() += 10;
+
+		p.drawText( drawPos, QString( "Miss: " ) + QString::number( t.miss ) );
+
+	}
+
 	p.end();
 }
 

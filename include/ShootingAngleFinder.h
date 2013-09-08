@@ -14,6 +14,8 @@ public:
 	// pixel colors around the origin
 	static float findAngle(QPixmap* pixmap, QPoint origin, bool &ok);
 
+	// calculate the power needed to hit at dx,dy at given angle
+	static int calculatePower(int dx, int dy, float angle, int &miss );
 //private:
 	static vector<QPoint> findAnglePoints(QPixmap* pixmap, QPoint origin);
 };

@@ -29,6 +29,14 @@ private slots:
 
 private:
 	void paintEvent(QPaintEvent*);
+
+	typedef struct tinfo
+	{
+		QPoint pos;
+		int velocity;
+		int miss;
+	} TargetInfo;
+
     Ui::ChildWindow *ui;
 
 	// Debug
@@ -38,7 +46,10 @@ private:
 	QTimer m_timer;
 
 	// data to display
+	QPoint m_playerPosition;
+	vector<TargetInfo> m_enemyTargetInfos;
 	vector<QPoint> m_debugPoints;
+	int m_angle;
 };
 
 #endif // MAINWINDOW_H

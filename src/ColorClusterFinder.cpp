@@ -6,7 +6,7 @@
 
 #include <iostream>
 
-vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color )
+vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color, QPoint avoid )
 {
 	QImage img = pixmap->toImage();
 
@@ -20,6 +20,10 @@ vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color )
 	{
 		for (int y = 0; y < size.height(); y++)
 		{
+			// spare the area exactly over the players position (avoid red-marker as enemy)
+			int dx = x - avoid.x();
+			if ( -10 < dx && dx < 10 ) continue;
+
 			QRgb rgb = img.pixel( x, y );
 
 			QColor rc( rgb );
