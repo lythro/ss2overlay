@@ -13,6 +13,11 @@ public:
 	// finds the shooting-angel from the given pixmap by evaluating
 	// pixel colors around the origin
 	static float findAngle(QPixmap* pixmap, QPoint origin, bool &ok);
+	
+	static int lastPower()
+	{
+		return gLastPower;
+	}
 
 	// calculate the power needed to hit at dx,dy at given angle
 	static int calculatePower(int dx, int dy, float angle, int &miss );
@@ -25,6 +30,9 @@ public:
 
 //private:
 	static vector<QPoint> findAnglePoints(QPixmap* pixmap, QPoint origin);
+private:
+	static int gLastPower;
 };
+
 
 #endif

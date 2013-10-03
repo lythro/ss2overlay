@@ -21,6 +21,10 @@
 #include <QRegion>
 #include <QPalette>
 
+#include <QShortcut>
+#include <QKeySequence>
+
+
 #include <cmath>
 #include <iostream>
 #include <vector>
@@ -58,8 +62,17 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	m_settingsUi = new Ui::SettingsWidget();
 	m_settingsUi->setupUi( &m_settingsWidget );
+	
+	m_settingsUi->spinBoxPower->setValue( 74 );
+	m_settingsUi->spinBoxAngle->setValue( 55 );
+
 	m_settingsWidget.setWindowFlags( Qt::WindowStaysOnTopHint );
+
+	QObject::connect( m_settingsUi->pushButton, SIGNAL(clicked()),
+					this, SLOT(estimateCurrentState()) );
+
 	m_settingsWidget.show();
+
 
 	// debug
 	//m_debugLabel = new QLabel();
@@ -71,6 +84,28 @@ ChildWindow::ChildWindow(QWidget *parent) :
 	// setup timer
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
 	m_timer.start( 1000 );
+}
+
+void ChildWindow::estimateCurrentState()
+{
+	QRect g = geometry(); // client area geometry
+	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
+					g.x(), g.y(), g.width(), g.height() );
+	
+	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
+	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
+
+	vector<QPoint> my_position = ColorClusterFinder::findCluster( &pic, colorPlayer.rgb() );
+
+	if (my_position.size() == 1)
+	{
+		bool ok;
+		float angle = ShootingAngleFinder::findAngle( &pic, my_position[0], ok );
+		int power = ShootingAngleFinder::lastPower();
+
+		m_settingsUi->spinBoxPower->setValue( power );
+		m_settingsUi->spinBoxAngle->setValue( (int)( angle + 0.5 ) );
+	}
 }
 
 
@@ -153,6 +188,22 @@ void ChildWindow::updateOverlay()
 
 			sim.addBullet( b );
 
+			// three-ball!
+			if (m_settingsUi->checkBox->isChecked())
+			{
+				for (int i = -1; i <= 1; i++)
+				{
+					if (i == 0) continue;
+	
+					Bullet t;
+
+					t.setPosition( m_playerPosition );
+					t.setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
+					t.setVelocity( m_settingsUi->spinBoxPower->value() );
+
+					sim.addBullet( t );
+				}
+			}
 
 			sim.simulate( 10000, 0.01);
 
@@ -195,12 +246,15 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
+		if (0 < i && i  < 10 ) continue; // TODO skip the first n points to unblock gun endpoint
+
 		//cout << "Cluster at: " << m_debugPoints[i].x() << ","
 		//		<< m_debugPoints[i].y() << endl;
 		p.drawPoint( m_debugPoints[i] );
 	}
 
 
+	/*
 	// draw found angle at players position
 	QPoint pPos = m_playerPosition - QPoint( 20, -20 );
 	p.drawText( pPos, QString( "Angle: " ) + QString::number( m_angle ) );
@@ -225,6 +279,7 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 		p.drawText( drawPos, QString( "Miss: " ) + QString::number( t.miss ) );
 
 	}
+	*/
 
 	p.end();
 }

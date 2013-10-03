@@ -27,6 +27,7 @@ public:
 
 private slots:
 	void updateOverlay();
+	void estimateCurrentState();
 
 private:
 	void paintEvent(QPaintEvent*);

@@ -12,6 +12,9 @@ using std::endl;
 //#define GRAVITY -9.23 /* TODO calc a better value... */
 #define GRAVITY -9.5
 
+
+int ShootingAngleFinder::gLastPower = 0;
+
 float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 {
 		vector<QPoint> points = findAnglePoints( pixmap, origin );
@@ -75,6 +78,33 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 		mean = mean / (granularity * used);
 
 		mean += 180; // undo symmetry
+
+		// estimate the power of the shot
+		// therefor, find the highest angle-point on the line
+		// created by the origin and the found angle
+		// unfortunately there is no order in the vector
+		// of angle-points.
+		// sooo... check them all.
+		
+		gLastPower = 0;
+		for (int i = 0; i < points.size(); i++)
+		{
+			int dx = points[i].x() - origin.x();
+			int dy = points[i].y() - origin.y();
+			
+			float fangle = atan2( dy, -dx ) * (180./PI) + 180;
+
+			int rounded = (int) ((fangle*granularity) + 0.5) % 360;
+
+			if (rounded/granularity == (int)(mean + 0.5))
+			{
+				int power = (int) sqrt(dx*dx + dy*dy)/2;
+				if (power > gLastPower)
+					gLastPower = power;
+			}
+
+		}
+
 
 		return mean;
 }
