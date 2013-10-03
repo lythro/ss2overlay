@@ -36,7 +36,7 @@ vector<QPoint> ColorClusterFinder::findCluster( QPixmap* pixmap, QRgb color, QPo
 			dg *= dg < 0 ? -1 : 1;
 			db *= db < 0 ? -1 : 1;
 
-			if (dr + dg + db < 10)
+			if (dr + dg + db < 30)
 			//if (rc == cc)
 			{
 				// find all the correct points

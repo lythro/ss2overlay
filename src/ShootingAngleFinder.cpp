@@ -9,12 +9,13 @@ using std::cout;
 using std::endl;
 
 #define PI 3.141592653589793
-#define GRAVITY -9.23 /* TODO calc a better value... */
+//#define GRAVITY -9.23 /* TODO calc a better value... */
+#define GRAVITY -9.5
 
 float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 {
 		vector<QPoint> points = findAnglePoints( pixmap, origin );
-		if (points.size() < 20)
+		if (points.size() < 100)
 		{
 			// not enough information to get the angle
 			ok = false;
@@ -22,21 +23,7 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 		}
 		ok = true;
 
-		/*
-		int dx = 0;
-		int dy = 0;
-		// build one big vector-sum
-		for (int i = 0; i < points.size(); i++)
-		{
-			dx += points[i].x() - origin.x();
-			dy += points[i].y() - origin.y();
-		}
-
-		// calc the angle
-		float angle = atan2( dy, -dx ) * (180./PI) + 180;
-		*/
-
-		// different approach: weight the possible angles!
+		// approach: every found point votes for an angle!
 		int granularity = 1;
 		vector<int> angle;
 		for (int i = 0; i < 360 * granularity; i++) angle.push_back( 0 );
@@ -65,25 +52,29 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 		cout << "maxVotings: " << maxCount << endl;
 
 		// accept all angles with at least 60% of maxCount votings
-		int minCount = (int) (0.6 * maxCount);
+		int minCount = (int) (0.7 * maxCount);
 
 		cout << "minNeeded: " << minCount << endl;
 
-		// mean of all acceptable angles
+		// mean of all acceptable angles, weighted
 		float mean = 0;
 		float used = 0;
 		for (int i = 0; i < 360 * granularity; i++)
 		{
 			if (angle[i] > minCount)
 			{
-				used++;
-				mean += i;
+				used += angle[i];
+				mean += angle[i] * (i - (180 * granularity)); // - 180*granularity to make the scale symmetric
+												// (1 + 359)/2 = 180  | WRONG
+												// (-179 + 179)/2 = 0 | RIGHT
 			}
 		}
 
 		cout << "used: " << used << endl;
 
 		mean = mean / (granularity * used);
+
+		mean += 180; // undo symmetry
 
 		return mean;
 }
@@ -127,8 +118,51 @@ int ShootingAngleFinder::calculatePower(int dx, int dy, float angle, int &miss)
 	return minDistVal;
 }
 
+QPoint ShootingAngleFinder::findGunEndpoint(QPixmap* pixmap, QPoint origin, QColor cc)
+{
+	QImage img = pixmap->toImage();
+
+	QPoint maxDistPoint( origin );
+	int maxDist = 0;
+
+	for (int dx = -20; dx < 20; dx++)
+	{
+		for (int dy = -20; dy < 20; dy++)
+		{
+			QPoint p = origin + QPoint( dx, dy );
+			QRgb rgb = img.pixel( p );
+
+			QColor rc( rgb );
+
+			// compare with given color
+			int dr = rc.red() - cc.red();
+			int dg = rc.green() - cc.green();
+			int db = rc.blue() - cc.blue();
+
+			dr *= dr < 0 ? -1 : 1;
+			dg *= dg < 0 ? -1 : 1;
+			db *= db < 0 ? -1 : 1;
+
+			if (dr + dg + db < 40)
+			{
+				int dist = dx*dx + dy*dy;
+				if (dist > maxDist)
+				{
+					maxDist = dist;
+					maxDistPoint = p;
+				}
+			}
+
+		}
+	}
+
+	return maxDistPoint;
+}
+
 vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint origin)
 {
+	QColor ignore( 255, 255, 0 ); // this color: text drawn by this program!
+
 	int range = 200;
 
 	QImage img = pixmap->toImage();
@@ -146,10 +180,12 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 
 		for (int dy = -range; dy < range; dy++)
 		{
+			
 			// skip my user-name-area! evil white name!
-			if ( -20 < dx && dx < 20 )
-				if ( -40 < dy && dy < -25 )
+			if ( -15 < dx && dx < 15 )
+				if ( -33 < dy && dy < -22 )
 					continue;
+			
 
 			//
 			int y = origin.y() + dy;
@@ -159,6 +195,8 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 			QPoint p( x, y );
 			QRgb rgb = img.pixel( p );
 			QColor c( rgb );
+
+			if (c == ignore) continue;
 
 
 			int sum = c.red() + c.green() + c.blue();
