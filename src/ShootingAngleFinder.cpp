@@ -49,12 +49,12 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 			if (angle[i] > maxCount) maxCount = angle[i];
 		}
 
-		cout << "maxVotings: " << maxCount << endl;
+		//cout << "maxVotings: " << maxCount << endl;
 
 		// accept all angles with at least 60% of maxCount votings
 		int minCount = (int) (0.7 * maxCount);
 
-		cout << "minNeeded: " << minCount << endl;
+		//cout << "minNeeded: " << minCount << endl;
 
 		// mean of all acceptable angles, weighted
 		float mean = 0;
@@ -70,7 +70,7 @@ float ShootingAngleFinder::findAngle(QPixmap* pixmap, QPoint origin, bool &ok)
 			}
 		}
 
-		cout << "used: " << used << endl;
+		//cout << "used: " << used << endl;
 
 		mean = mean / (granularity * used);
 
@@ -122,12 +122,11 @@ QPoint ShootingAngleFinder::findGunEndpoint(QPixmap* pixmap, QPoint origin, QCol
 {
 	QImage img = pixmap->toImage();
 
-	QPoint maxDistPoint( origin );
-	int maxDist = 0;
-
-	for (int dx = -20; dx < 20; dx++)
+	// pre-work: find all the needed pixel
+	vector<QPoint> possible;
+	for (int dx = -20; dx <= 20; dx++)
 	{
-		for (int dy = -20; dy < 20; dy++)
+		for (int dy = -20; dy <= 20; dy++)
 		{
 			QPoint p = origin + QPoint( dx, dy );
 			QRgb rgb = img.pixel( p );
@@ -143,20 +142,67 @@ QPoint ShootingAngleFinder::findGunEndpoint(QPixmap* pixmap, QPoint origin, QCol
 			dg *= dg < 0 ? -1 : 1;
 			db *= db < 0 ? -1 : 1;
 
-			if (dr + dg + db < 40)
+			if (dr + dg + db < 50) // tolerance 50
 			{
-				int dist = dx*dx + dy*dy;
-				if (dist > maxDist)
-				{
-					maxDist = dist;
-					maxDistPoint = p;
-				}
+				possible.push_back( p );
 			}
-
 		}
 	}
 
-	return maxDistPoint;
+
+	// first: find the maximum distance - in a 40x40 pixel area around
+	// the players origin
+	int maxDist = 0;
+
+	for (int i = 0; i < possible.size(); i++)
+	{
+		QPoint p = possible[i];
+		int dx = p.x() - origin.x();
+		int dy = p.y() - origin.y();
+
+		int dist = dx*dx + dy*dy;
+		if (dist > maxDist)
+		{
+			maxDist = dist;
+		}
+	}
+
+	// second: sum up all the points with maxDist distance
+	// to the players origin and take the weighted sum as a result
+	// this will hopefully find the middle of the guns end, not an edge
+	
+	float compare = sqrt( maxDist );
+
+	vector<QPoint> endpoints;
+
+	for (int i = 0; i < possible.size(); i++)
+	{
+		QPoint p = possible[i];
+		int dx = p.x() - origin.x();
+		int dy = p.y() - origin.y();
+		
+		//if (sqrt( dx*dx + dy*dy ) + 1. < compare)
+		if ( dx*dx + dy*dy < maxDist - 2. )
+		{
+			continue;
+		}
+		else
+		{
+			// found a possible gun-endpoint.
+			endpoints.push_back( p );
+		}
+	}
+
+	// third: calculate the mean.
+	QPoint mean( 0, 0 );
+	for (int i = 0; i < endpoints.size(); i++) mean += endpoints[i];
+	if (endpoints.size())
+	{
+		mean.rx() /= endpoints.size();
+		mean.ry() /= endpoints.size();
+	}
+
+	return mean;
 }
 
 vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint origin)

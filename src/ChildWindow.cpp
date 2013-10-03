@@ -97,6 +97,13 @@ void ChildWindow::updateOverlay()
 		// step 2: find the players gun-endpoint for more accurate calculations
 		QPoint gunPosition = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer );
 
+		m_debugPoints.push_back( gunPosition );
+
+		/*
+		cout << "My Position : " << m_playerPosition.x() << ", " << m_playerPosition.y() << endl;
+		cout << "Gun Endpoint: " << gunPosition.x() << ", " << gunPosition.y() << endl;
+		*/
+
 		// step 3: find the players current shooting-angle
 		bool ok;
 		float angle = ShootingAngleFinder::findAngle( &pic, gunPosition, ok );
@@ -192,7 +199,6 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 	QPoint pPos = m_playerPosition - QPoint( 20, -20 );
 	p.drawText( pPos, QString( "Angle: " ) + QString::number( m_angle ) );
 
-	
 
 	// draw target infos!
 	for (int i = 0; i < m_enemyTargetInfos.size(); i++)
