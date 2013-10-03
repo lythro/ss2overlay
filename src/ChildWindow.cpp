@@ -1,10 +1,15 @@
 #include "ChildWindow.h"
 #include "ui_childwindow.h"
 
+#include "ui_settings.h"
+
 #include "sleep.h"
 
 #include "ColorClusterFinder.h"
 #include "ShootingAngleFinder.h"
+
+#include "ShootingSimulator.h"
+#include "Bullet.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -51,6 +56,11 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	ui->setupUi(this);
 
+	m_settingsUi = new Ui::SettingsWidget();
+	m_settingsUi->setupUi( &m_settingsWidget );
+	m_settingsWidget.setWindowFlags( Qt::WindowStaysOnTopHint );
+	m_settingsWidget.show();
+
 	// debug
 	//m_debugLabel = new QLabel();
 	//m_debugLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
@@ -94,87 +104,83 @@ void ChildWindow::updateOverlay()
 		m_playerPosition = my_position[0];
 		m_debugPoints.push_back( my_position[0] );
 
-		// step 2: find the players gun-endpoint for more accurate calculations
-		QPoint gunPosition = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer );
-
-		m_debugPoints.push_back( gunPosition );
-
-		/*
-		cout << "My Position : " << m_playerPosition.x() << ", " << m_playerPosition.y() << endl;
-		cout << "Gun Endpoint: " << gunPosition.x() << ", " << gunPosition.y() << endl;
-		*/
-
-		// step 3: find the players current shooting-angle
-		bool ok;
-		float angle = ShootingAngleFinder::findAngle( &pic, gunPosition, ok );
-
-		if (ok)
-		{
-			// step 4: locate the enemies
-			vector <QPoint> enemies = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb(), m_playerPosition );
+		// locate the enemies
+		vector <QPoint> enemies = ColorClusterFinder::findCluster( &pic, colorEnemy.rgb(), m_playerPosition );
 			
-			m_debugPoints.insert( m_debugPoints.end(), enemies.begin(), enemies.end() );
+		m_debugPoints.insert( m_debugPoints.end(), enemies.begin(), enemies.end() );
 
-			// round the angle!
-			m_angle = (int)(angle + 0.5);
+		// step 5: sort out the red markers (over enemies right now - need to locate allies to delete their markers)
+		for (int i = 0; i < enemies.size(); i++)
+		{
+			QPoint* a = &(enemies[i]);
+			if (a->x() == -1) continue;
 
-			// step 5: sort out the red markers (over enemies right now - need to locate allies to delete their markers)
-			for (int i = 0; i < enemies.size(); i++)
+			// check all the other locations - mark found "red markers" with -1
+			for (int j = i+1; j < enemies.size(); j++)
 			{
-				QPoint* a = &(enemies[i]);
-				if (a->x() == -1) continue;
+				QPoint* b = &(enemies[j]);
+				if (b->x() == -1) continue;
 
-				// check all the other locations - mark found "red markers" with -1
-				for (int j = i+1; j < enemies.size(); j++)
+				// in a 4 dot width area
+				if (a->x() - 2 < b->x() && b->x() < a->x() + 2)		// TODO  adjust this
 				{
-					QPoint* b = &(enemies[j]);
-					if (b->x() == -1) continue;
-
-					// in a 4 dot width area
-					if (a->x() - 2 < b->x() && b->x() < a->x() + 2)		// TODO  adjust this
+					// one is less than 50 dots below the other
+					if (a->y() > b->y() && a->y()-50 < b->y())
 					{
-						// one is less than 50 dots below the other
-						if (a->y() > b->y() && a->y()-50 < b->y())
-						{
-							// a higher b, but a-50 lower b --> a is bs marker!
-							a->rx() = -1;
-							a->ry() = -1;
-						}
-						else if (b->y() > a->y() && b->y()-50 < a->y())
-						{
-							// b higher a, but b-50 lower a --> b is as marker!
-							b->rx() = -1;
-							b->ry() = -1;
-						}
+						// a higher b, but a-50 lower b --> a is bs marker!
+						a->rx() = -1;
+						a->ry() = -1;
+					}
+					else if (b->y() > a->y() && b->y()-50 < a->y())
+					{
+						// b higher a, but b-50 lower a --> b is as marker!
+						b->rx() = -1;
+						b->ry() = -1;
 					}
 				}
 			}
 
+			// step 6: TESTING SIMULATION
+			
 
-			// step 6: for every enemy - get the needed shooting-power
+			ShootingSimulator sim( QPoint( g.width(), g.height() ) );
+
+			Bullet b;
+			b.setPosition( m_playerPosition );
+			
+			b.setAngle( m_settingsUi->spinBoxAngle->value() );
+			b.setVelocity( m_settingsUi->spinBoxPower->value() );
+
+			sim.addBullet( b );
+
+
+			sim.simulate( 10000, 0.01);
+
+			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
+			int dx = gunPoint.x() - m_playerPosition.x();
+			int dy = gunPoint.y() - m_playerPosition.y();
+
+			// viz
+			vector<QPoint> tracer = sim.getTracerPoints();
+			
+			cout << "Tracer: " << tracer.size() << endl;
+			// adjust tracer by moving it to the guns endpoint
+			for (int i = 0; i < tracer.size(); i++)
+			{
+				tracer[i].rx() += dx;
+				tracer[i].ry() += dy;
+			}
+
+			m_debugPoints.insert( m_debugPoints.end(), tracer.begin(), tracer.end() );
+
+
+			/*
 			for (int i = 0; i < enemies.size(); i++)
 			{
 				if (enemies[i].x() == -1) continue;
 
-				// use gun endpoint for calc!
-				int dx = enemies[i].x() - gunPosition.x();
-				int dy = enemies[i].y() - gunPosition.y();
-
-				int miss = -1;
-				int power = ShootingAngleFinder::calculatePower( dx, dy, m_angle, miss );
-
-				// update target-information-vector
-				TargetInfo t;
-				t.pos = enemies[i];
-				t.velocity = power;
-				t.miss = miss;
-
-				m_enemyTargetInfos.push_back( t );
 			}
-		}
-		else
-		{
-			cout << "couldn't find shooting angle" << endl;
+			*/
 		}
 	}
 	repaint(); // force repaint

@@ -2,6 +2,7 @@
 #define CHILDWINDOW_H
 
 #include "ui_childwindow.h"
+#include "ui_settings.h"
 
 #include <QMainWindow>
 #include <QPixmap>
@@ -38,6 +39,10 @@ private:
 	} TargetInfo;
 
     Ui::ChildWindow *ui;
+
+	// quick and dirty
+	Ui::SettingsWidget* m_settingsUi;
+	QWidget m_settingsWidget;
 
 	// Debug
 	QLabel* m_debugLabel;

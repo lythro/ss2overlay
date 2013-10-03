@@ -12,6 +12,7 @@ SET ( UI_sources
 	# all your .ui files
 	../ui/mainwindow.ui
 	../ui/childwindow.ui
+	../ui/settings.ui
 )
   	
 QT4_WRAP_UI ( UI_headers ${UI_sources})
@@ -26,6 +27,7 @@ SET ( App_sources
 
 	ColorClusterFinder.cpp
 	ShootingAngleFinder.cpp
+	ShootingSimulator.cpp
 )
 
 QT4_WRAP_CPP ( MOC_headers
