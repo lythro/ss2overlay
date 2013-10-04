@@ -47,6 +47,9 @@ public:
 	{
 		m_vx = vx;
 		m_vy = vy;
+
+		float PI = 3.14159265;
+		m_angle = (int) (atan2( -m_vy, m_vx ) * 180./PI);
 	}
 
 	// the most important of them all:
@@ -56,8 +59,13 @@ public:
 		m_position.rx() += m_vx * stepsize;
 		m_position.ry() += m_vy * stepsize;
 
+		/*
 		m_vx += m_ax * stepsize;
 		m_vy += m_ay * stepsize;
+		*/
+
+		setVelocity( m_vx + m_ax * stepsize,
+					m_vy + m_ay * stepsize );
 	}
 
 	// these functions should not be needed
