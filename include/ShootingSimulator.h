@@ -17,7 +17,7 @@ public:
 		m_fieldSize = fieldsize;
 	}
 	
-	void addBullet( Bullet b )
+	void addBullet( Bullet* b )
 	{
 		m_bullets.push_back( b );
 	}
@@ -54,7 +54,7 @@ private:
 	vector<QPoint> m_obstacles;
 
 	// bullets to simulate
-	vector<Bullet> m_bullets;
+	vector<Bullet*> m_bullets;
 
 	// tracer-points for visualization
 	vector<QPoint> m_tracer;

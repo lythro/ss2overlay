@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>227</width>
-    <height>171</height>
+    <height>296</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -80,9 +80,33 @@
     </widget>
    </item>
    <item row="5" column="0">
-    <widget class="QCheckBox" name="checkBox">
+    <widget class="QRadioButton" name="radioButtonShot">
      <property name="text">
-      <string>Three-Shot</string>
+      <string>Shot</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QRadioButton" name="radioButtonThreeshot">
+     <property name="text">
+      <string>Three - Shot</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QRadioButton" name="radioButtonFiveshot">
+     <property name="text">
+      <string>Five - Shot</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QRadioButton" name="radioButtonHoverball">
+     <property name="text">
+      <string>Hover - Ball</string>
      </property>
     </widget>
    </item>

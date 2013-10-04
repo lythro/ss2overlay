@@ -13,6 +13,9 @@ public:
 		m_vx = 0.;
 		m_vy = 0.;
 		m_angle = 0.;
+
+		m_ax = 0.;
+		m_ay = 9.5;
 	}
 
 	void setPosition( QPointF p )
@@ -46,7 +49,23 @@ public:
 		m_vy = vy;
 	}
 
+	// the most important of them all:
+	// progression through time
+	virtual void step( float stepsize )
+	{
+		m_position.rx() += m_vx * stepsize;
+		m_position.ry() += m_vy * stepsize;
 
+		m_vx += m_ax * stepsize;
+		m_vy += m_ay * stepsize;
+	}
+
+	// these functions should not be needed
+	// bullets must calculate their steps themselves,
+	// else no bouncing etc is possible.
+	// the simulator does not know the behaviour,
+	// it just tells the bullet "you hit something"
+	// or "step forward (through time)
 	int x(){ return (int) m_position.x(); }
 	int y(){ return (int) m_position.y(); }
 	QPoint position(){ return m_position.toPoint(); }
@@ -59,10 +78,10 @@ public:
 	// Hence the bullet-classes need to know their own forces
 	
 	// in terms of accelleration
-	virtual float ax(){ return 0.; }
-	virtual float ay(){ return 9.5; } // TODO: adjust this!
+	virtual float ax(){ return m_ax; }
+	virtual float ay(){ return m_ay; } // TODO: adjust this!
 
-private:
+protected:
 	// position
 	QPointF m_position;
 
@@ -72,6 +91,9 @@ private:
 
 	// angle
 	int m_angle;
+
+	float m_ax;
+	float m_ay;
 
 };
 

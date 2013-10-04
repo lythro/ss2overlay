@@ -16,7 +16,7 @@ void ShootingSimulator::simulate( int steps, float step_size )
 		{
 			// save its position for the tracer
 			// TODO boundary / obstacle-check
-			QPointF pos = m_bullets[i].positionF();
+			QPointF pos = m_bullets[i]->positionF();
 			if (pos.x() < 0 || pos.y() < 0
 				|| pos.x() > m_fieldSize.x()
 				|| pos.y() > m_fieldSize.y())
@@ -27,22 +27,9 @@ void ShootingSimulator::simulate( int steps, float step_size )
 				m_tracer.push_back( pos.toPoint() );
 			}
 
-			// update its postion
-			Bullet* b = &m_bullets[i];
-			float vx = b->vx();
-			float vy = b->vy();
-
-			QPointF p = b->positionF();
-			p = p + QPointF( vx * step_size,
-							 vy * step_size );
-
-			b->setPosition( p );
-
-			// update its velocity
-			vx = vx + b->ax() * step_size;
-			vy = vy + b->ay() * step_size;
-
-			b->setVelocity( vx, vy );
+			// move it
+			Bullet* b = m_bullets[i];
+			b->step( step_size );
 		}
 	}
 }

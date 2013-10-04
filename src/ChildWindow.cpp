@@ -9,7 +9,9 @@
 #include "ShootingAngleFinder.h"
 
 #include "ShootingSimulator.h"
+
 #include "Bullet.h"
+#include "Hoverball.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -180,30 +182,47 @@ void ChildWindow::updateOverlay()
 
 			ShootingSimulator sim( QPoint( g.width(), g.height() ) );
 
-			Bullet b;
-			b.setPosition( m_playerPosition );
-			
-			b.setAngle( m_settingsUi->spinBoxAngle->value() );
-			b.setVelocity( m_settingsUi->spinBoxPower->value() );
 
-			sim.addBullet( b );
-
-			// three-ball!
-			if (m_settingsUi->checkBox->isChecked())
+			/* shot simulation */
+			int relativeCount = -1;
+			if (m_settingsUi->radioButtonShot->isChecked())
 			{
-				for (int i = -1; i <= 1; i++)
-				{
-					if (i == 0) continue;
-	
-					Bullet t;
-
-					t.setPosition( m_playerPosition );
-					t.setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
-					t.setVelocity( m_settingsUi->spinBoxPower->value() );
-
-					sim.addBullet( t );
-				}
+				relativeCount = 0;
 			}
+
+			/* three-/five-shot simulation */
+			if (m_settingsUi->radioButtonThreeshot->isChecked())
+			{
+				relativeCount = 1;
+			}
+
+			if (m_settingsUi->radioButtonFiveshot->isChecked())
+			{
+				relativeCount = 2;
+			}
+			for (int i = -relativeCount; i <= relativeCount; i++)
+			{
+				if (relativeCount == -1) break;
+
+				Bullet t;
+				t.setPosition( m_playerPosition );
+				t.setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
+				t.setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( &t );
+			}
+
+			/* hoverball simulation */
+			if (m_settingsUi->radioButtonHoverball->isChecked())
+			{
+				Hoverball b;
+				b.setPosition( m_playerPosition );
+				b.setAngle( m_settingsUi->spinBoxAngle->value() );
+				b.setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( &b );
+			}
+
+
+
 
 			sim.simulate( 10000, 0.01);
 
