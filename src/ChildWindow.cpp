@@ -283,7 +283,15 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 		//cout << "Cluster at: " << m_debugPoints[i].x() << ","
 		//		<< m_debugPoints[i].y() << endl;
-		p.drawPoint( m_debugPoints[i] );
+		
+		// only draw if not too close to the player
+		int dx = m_debugPoints[i].x() - m_playerPosition.x();
+		int dy = m_debugPoints[i].y() - m_playerPosition.y();
+		dx = (dx < 0 ? -dx : dx);
+		dy = (dy < 0 ? -dy : dy);
+
+		if (dx + dy > 15)
+			p.drawPoint( m_debugPoints[i] );
 	}
 
 
