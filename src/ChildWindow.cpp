@@ -13,6 +13,7 @@
 #include "Bullet.h"
 #include "Hoverball.h"
 #include "Boomerang.h"
+#include "Splitter.h"
 
 #include <QPainter>
 #include <QPixmap>
