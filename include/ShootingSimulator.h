@@ -16,6 +16,11 @@ public:
 	{
 		m_fieldSize = fieldsize;
 	}
+
+	~ShootingSimulator()
+	{
+		reset();
+	}
 	
 	void addBullet( Bullet* b )
 	{
@@ -41,7 +46,10 @@ public:
 	void reset()
 	{
 		m_obstacles.clear();
+		
+		for (int i = 0; i < m_bullets.size(); i++) delete m_bullets[i];
 		m_bullets.clear();
+
 		m_tracer.clear();
 	}
 

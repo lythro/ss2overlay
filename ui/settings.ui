@@ -96,6 +96,13 @@
      </property>
     </widget>
    </item>
+   <item row="8" column="0">
+    <widget class="QRadioButton" name="radioButtonHoverball">
+     <property name="text">
+      <string>Hover - Ball</string>
+     </property>
+    </widget>
+   </item>
    <item row="7" column="0">
     <widget class="QRadioButton" name="radioButtonFiveshot">
      <property name="text">
@@ -103,10 +110,10 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QRadioButton" name="radioButtonHoverball">
+   <item row="9" column="0">
+    <widget class="QRadioButton" name="radioButtonBoomerang">
      <property name="text">
-      <string>Hover - Ball</string>
+      <string>Boomerang</string>
      </property>
     </widget>
    </item>

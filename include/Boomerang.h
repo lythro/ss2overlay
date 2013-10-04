@@ -5,7 +5,11 @@
 
 class Boomerang : public Bullet
 {
-
+public:
+	Boomerang() : Bullet()
+	{
+		m_ax = -25.;
+	}
 };
 
 #endif

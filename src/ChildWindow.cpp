@@ -12,6 +12,7 @@
 
 #include "Bullet.h"
 #include "Hoverball.h"
+#include "Boomerang.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -204,21 +205,33 @@ void ChildWindow::updateOverlay()
 			{
 				if (relativeCount == -1) break;
 
-				Bullet t;
-				t.setPosition( m_playerPosition );
-				t.setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
-				t.setVelocity( m_settingsUi->spinBoxPower->value() );
-				sim.addBullet( &t );
+				cout << "Bullet with i = " << i << endl;
+
+				Bullet* t = new Bullet();
+				t->setPosition( m_playerPosition );
+				t->setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
+				t->setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( t );
 			}
 
 			/* hoverball simulation */
 			if (m_settingsUi->radioButtonHoverball->isChecked())
 			{
-				Hoverball b;
-				b.setPosition( m_playerPosition );
-				b.setAngle( m_settingsUi->spinBoxAngle->value() );
-				b.setVelocity( m_settingsUi->spinBoxPower->value() );
-				sim.addBullet( &b );
+				Hoverball* b = new Hoverball();
+				b->setPosition( m_playerPosition );
+				b->setAngle( m_settingsUi->spinBoxAngle->value() );
+				b->setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( b );
+			}
+
+			/* Boomerang simulation */
+			if (m_settingsUi->radioButtonBoomerang->isChecked())
+			{
+				Boomerang* b = new Boomerang();
+				b->setPosition( m_playerPosition );
+				b->setAngle( m_settingsUi->spinBoxAngle->value() );
+				b->setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( b );
 			}
 
 
