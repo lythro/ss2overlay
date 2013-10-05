@@ -20,6 +20,20 @@ public:
 		setVelocity( m_vx + m_ax * stepsize,
 					m_vy + vz * m_ay * stepsize );
 	}
+
+	virtual void handleCollision( vector<int>& map )
+	{
+		bool below = !m_aboveGround;
+
+		Bullet::handleCollision( map );
+
+		if (below && m_aboveGround)
+		{
+			// was below, now above
+			// --> explosion!
+			m_valid = false;
+		}
+	}
 };
 
 #endif

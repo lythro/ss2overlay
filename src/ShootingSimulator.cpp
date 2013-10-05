@@ -26,7 +26,7 @@ void ShootingSimulator::simulate( int steps, float step_size, vector<bool>* grou
 			else
 			{
 				m_tracer.push_back( pos.toPoint() );
-				ground_status->push_back( m_bullets[i]->m_aboveGround );
+				ground_status->push_back( m_bullets[i]->aboveGround() );
 
 			}
 

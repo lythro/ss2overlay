@@ -8,6 +8,10 @@
 #include <vector>
 using std::vector;
 
+#include <iostream>
+using std::cout;
+using std::endl;
+
 class Bullet
 {
 public:
@@ -73,18 +77,26 @@ public:
 	// allow the simulator to hand collision handling to the bullet
 	virtual void handleCollision( vector<int>& map )
 	{
-		if (map.size() <= x()) 	return;
-		if (x() < 0)			return;
+		checkAboveGround( map );
+		
+		// check for collision with the borders of the map
+		if (map.size() < 2) return;
 
-		// before: above, now: below  or
-		// before: below, now: above
-		// --> collision
-		if (  ( m_aboveGround && map[x()] <= y() )
-			||(!m_aboveGround && map[x()] >= y() ) )
+		// first: bouncing from the side of the map
+			/* bounce from the left */
+		if (	(-2 < x() 				&& x() < 1)
+			||	( map.size() + 1 > x() 	&& x() >= map.size() -1) )
 		{
-			if (m_checkValid)
+			int dy = (x() <= 0 ? y() - map[0] : y() - map[map.size()-1]);
+			dy = dy > 0 ? dy : -dy;
+
+			if (dy < 100)
 			{
-		//		m_valid = false;
+				int vz   = (x() < 1 ? +1 : -1);
+				int corr = (vz * m_vx > 0 ? +1 : -1);
+				// just invert the x-direction
+				cout << "corr: " << corr << endl;
+				setVelocity( corr * m_vx, m_vy );
 			}
 		}
 
@@ -102,6 +114,7 @@ public:
 	QPoint position(){ return m_position.toPoint(); }
 	QPointF positionF(){ return m_position; }
 
+	bool aboveGround(){ return m_aboveGround; }
 	bool valid(){ return m_valid; }
 
 	float vx(){ return m_vx; }
@@ -113,6 +126,25 @@ public:
 	// in terms of accelleration
 	virtual float ax(){ return m_ax; }
 	virtual float ay(){ return m_ay; } // TODO: adjust this!
+
+protected:
+	virtual void checkAboveGround( vector<int>& map )
+	{
+		if (map.size() <= x()) 	return;
+		if (x() < 0)			return;
+	
+		// before: above, now: below  or
+		// before: below, now: above
+		// --> collision
+		if (  ( m_aboveGround && map[x()] <= y() )
+			||(!m_aboveGround && map[x()] >= y() ) )
+		{
+			if (m_checkValid)
+			{
+				m_valid = false;
+			}
+		}
+	}
 
 
 protected:
@@ -133,7 +165,7 @@ protected:
 	bool m_valid;
 	bool m_checkValid;
 
-public:
+	// submerged or not?
 	bool m_aboveGround;
 };
 

@@ -16,6 +16,7 @@
 #include "Boomerang.h"
 #include "Splitter.h"
 #include "Tunneler.h"
+#include "Bouncer.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -81,9 +82,9 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 
 	// debug
-	//m_debugLabel = new QLabel();
-	//m_debugLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
-	//m_debugLabel->show();
+	m_debugLabel = new QLabel();
+	m_debugLabel->setSizePolicy(QSizePolicy::Expanding,QSizePolicy::Expanding);
+	m_debugLabel->show();
 
 	m_angle = 0;
 
@@ -185,16 +186,25 @@ void ChildWindow::updateOverlay()
 			}
 
 
-			// TESTING surface extractor
+			// extracting the surface
 			vector<int> surface = SurfaceDetector::extractSurface( pic, m_playerPosition );
-		
-			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
-			/*
-			for (int x = 0; x < surface.size(); x++)
+
+			// debug: show the surface in the debug-label!
+			QPixmap debugPixmap( g.width(), g.height() );
+
+			QPainter paint( &debugPixmap );
+			paint.setPen( QColor( 255, 255, 0 ) );
+			for (int i = 0; i < surface.size(); i++)
 			{
-				m_debugPoints.push_back( QPoint( x, surface[x] ) );
+				paint.drawPoint( QPoint( i, surface[i] ) );
 			}
-			*/
+			paint.end();
+
+			m_debugLabel->setPixmap( debugPixmap );
+			m_debugLabel->resize( g.width(), g.height() );
+		
+			// and the position of the gun
+			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
 
 			// simulation
 			ShootingSimulator sim( QPoint( g.width(), g.height() ), surface );
@@ -206,6 +216,18 @@ void ChildWindow::updateOverlay()
 			{
 				relativeCount = 0;
 			}
+
+			/*
+			// DEBUG try bouncer
+			relativeCount = -1;
+
+			Bouncer* b = new Bouncer();
+			b->setPosition( gunPoint );
+			b->setVelocity( m_settingsUi->spinBoxPower->value() );
+			b->setAngle( m_settingsUi->spinBoxAngle->value() );
+
+			sim.addBullet( b );
+			*/
 
 			/* three-/five-shot simulation */
 			if (m_settingsUi->radioButtonThreeshot->isChecked())
@@ -220,7 +242,8 @@ void ChildWindow::updateOverlay()
 			for (int i = -relativeCount; i <= relativeCount; i++)
 			{
 				if (relativeCount == -1) break;
-				Bullet* t = new Bullet();
+										/* invalid on collision only if one-shot! */
+				Bullet* t = new Bullet( relativeCount == 0 );
 				t->setPosition( gunPoint );
 				t->setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
 				t->setVelocity( m_settingsUi->spinBoxPower->value() );

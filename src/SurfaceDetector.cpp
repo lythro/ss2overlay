@@ -48,11 +48,11 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 			// no need for sign-check,
 			// searching from the sky to the bottom
 			// sky: black, ground: blue
-			if (tval - val > 170)
+			if (tval - val > 120)
 			{
 				// check if blue-part is greater then the rest
-				if (!( tcolor.blue() - 50 > tcolor.green() &&
-					   tcolor.blue() - 50 > tcolor.red()))
+				if (!( tcolor.blue() - 30 > tcolor.green() &&
+					   tcolor.blue() - 30 > tcolor.red()))
 				{
 					// if not - no found.
 					val = tval;
@@ -76,11 +76,21 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 	 * we will mend these holes by using a 
 	 * linear approximation between the outer points
 	 * 
-	 * if first point unknown: just set it to be lowest ground possible.
-	 * there shouldn't be to many missing points,
-	 * so the first approximation will be very steep and unnoticable
+	 * if first point unknown:
+	 * set it to have the same value as the first valid point.
+	 * just setting it to height causes trouble with outer-bound-bouncing
 	 */
-	if (surface[0] == -1) surface[0] = height;
+	if (surface[0] == -1)
+	{
+		for (int i = 1; i < surface.size(); i++)
+		{
+			if (surface[i] != -1)
+			{
+				surface[0] = surface[i];
+				break;
+			}
+		}
+	}
 
 	/* find holes */
 	int leftx = 0;
@@ -101,7 +111,7 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 			// check: is there a hole to mend?
 			if (in_hole)
 			{
-				float m = (surface[x] - lefty) / (x-1 - leftx);
+				float m = ((float)(surface[x] - lefty)) / ((float)(x-1 - leftx));
 				int b = lefty;
 
 				int i = x-1;
@@ -116,6 +126,25 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 
 			leftx = x;
 			lefty = surface[x];
+		}
+	}
+
+	/* fix the right edge just like the left */
+	if (in_hole)
+	{
+		int y = height;
+		for (int x = surface.size()-1; x >= 0; x--)
+		{
+			if (surface[x] != -1)
+			{
+				y = surface[x];
+			}
+		}
+
+		int x = surface.size()-1;
+		while (surface[x] == -1)
+		{
+			surface[x--] = y;
 		}
 	}
 
