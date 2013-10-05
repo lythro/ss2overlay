@@ -119,9 +119,10 @@ void ChildWindow::estimateCurrentState()
 void ChildWindow::updateOverlay()
 {
 	QRect g = geometry(); // client area geometry
+	
 	QPixmap pic = QPixmap::grabWindow( QApplication::desktop()->winId(),
 					g.x(), g.y(), g.width(), g.height() );
-	
+
 	QColor colorPlayer( 4, 153, 4 ); // player-tank-green
 	QColor colorEnemy( 203, 0, 0 ); // enemy-tank-red
 
@@ -216,18 +217,7 @@ void ChildWindow::updateOverlay()
 			{
 				relativeCount = 0;
 			}
-
-			/*
-			// DEBUG try bouncer
-			relativeCount = -1;
-
-			Bouncer* b = new Bouncer();
-			b->setPosition( gunPoint );
-			b->setVelocity( m_settingsUi->spinBoxPower->value() );
-			b->setAngle( m_settingsUi->spinBoxAngle->value() );
-
-			sim.addBullet( b );
-			*/
+		
 
 			/* three-/five-shot simulation */
 			if (m_settingsUi->radioButtonThreeshot->isChecked())
@@ -280,6 +270,18 @@ void ChildWindow::updateOverlay()
 				sim.addBullet( t );
 			}
 
+			/* Bouncer simulation. Warning: Bouncer != Three-Bouncer! */
+			if (m_settingsUi->radioButtonBouncer->isChecked())
+			{
+				Bouncer* b = new Bouncer();
+				b->setPosition( gunPoint );
+				b->setVelocity( m_settingsUi->spinBoxPower->value() );
+				b->setAngle( m_settingsUi->spinBoxAngle->value() );
+
+				sim.addBullet( b );
+			}
+
+
 			sim.simulate( 10000, 0.01, &m_tracerAboveGround );
 
 			int dx = gunPoint.x() - m_playerPosition.x();
@@ -291,16 +293,6 @@ void ChildWindow::updateOverlay()
 			cout << "Tracer: " << tracer.size() << endl;
 			
 			m_tracerPoints.insert( m_tracerPoints.end(), tracer.begin(), tracer.end() );
-			//m_debugPoints.insert( m_debugPoints.end(), tracer.begin(), tracer.end() );
-
-
-			/*
-			for (int i = 0; i < enemies.size(); i++)
-			{
-				if (enemies[i].x() == -1) continue;
-
-			}
-			*/
 		}
 	}
 	repaint(); // force repaint

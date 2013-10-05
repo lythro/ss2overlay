@@ -7,13 +7,65 @@
     <x>0</x>
     <y>0</y>
     <width>227</width>
-    <height>296</height>
+    <height>339</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
+   <item row="3" column="0">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>estimate current state</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <widget class="QRadioButton" name="radioButtonShot">
+     <property name="text">
+      <string>Shot</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
+    <widget class="QRadioButton" name="radioButtonThreeshot">
+     <property name="text">
+      <string>Three - Shot</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QRadioButton" name="radioButtonHoverball">
+     <property name="text">
+      <string>Hover - Ball</string>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QRadioButton" name="radioButtonFiveshot">
+     <property name="text">
+      <string>Five - Shot</string>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="0">
+    <widget class="QRadioButton" name="radioButtonBoomerang">
+     <property name="text">
+      <string>Boomerang</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QRadioButton" name="radioButtonTunneler">
+     <property name="text">
+      <string>Tunneler</string>
+     </property>
+    </widget>
+   </item>
    <item row="1" column="0">
     <widget class="QSpinBox" name="spinBoxPower">
      <property name="alignment">
@@ -72,55 +124,10 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0">
-    <widget class="QPushButton" name="pushButton">
+   <item row="11" column="0">
+    <widget class="QRadioButton" name="radioButtonBouncer">
      <property name="text">
-      <string>estimate current state</string>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="0">
-    <widget class="QRadioButton" name="radioButtonShot">
-     <property name="text">
-      <string>Shot</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="0">
-    <widget class="QRadioButton" name="radioButtonThreeshot">
-     <property name="text">
-      <string>Three - Shot</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QRadioButton" name="radioButtonHoverball">
-     <property name="text">
-      <string>Hover - Ball</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QRadioButton" name="radioButtonFiveshot">
-     <property name="text">
-      <string>Five - Shot</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0">
-    <widget class="QRadioButton" name="radioButtonBoomerang">
-     <property name="text">
-      <string>Boomerang</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
-    <widget class="QRadioButton" name="radioButtonTunneler">
-     <property name="text">
-      <string>Tunneler</string>
+      <string>Bouncer</string>
      </property>
     </widget>
    </item>

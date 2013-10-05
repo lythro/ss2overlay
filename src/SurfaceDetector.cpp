@@ -21,7 +21,7 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 
 	for (int x = 1; x < width; x++)
 	{
-		if (origin.x()-10 < x && x < origin.x()+10)
+		if (origin.x()-5 < x && x < origin.x()+5)
 		{
 			// ignore some space around the player!
 			surface.push_back( origin.y() + 2 );
@@ -51,8 +51,8 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 			if (tval - val > 120)
 			{
 				// check if blue-part is greater then the rest
-				if (!( tcolor.blue() - 30 > tcolor.green() &&
-					   tcolor.blue() - 30 > tcolor.red()))
+				if (!( tcolor.blue() - 50 > tcolor.green() &&
+					   tcolor.blue() - 50 > tcolor.red()))
 				{
 					// if not - no found.
 					val = tval;

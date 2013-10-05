@@ -100,7 +100,8 @@ public:
 			}
 		}
 
-		m_aboveGround = (map[x()] > y());
+		if (0 <= x() && x() < map.size())
+			m_aboveGround = (map[x()] > y());
 	}
 
 	// these functions should not be needed
