@@ -28,6 +28,7 @@ SET ( App_sources
 	ColorClusterFinder.cpp
 	ShootingAngleFinder.cpp
 	ShootingSimulator.cpp
+	SurfaceDetector.cpp
 )
 
 QT4_WRAP_CPP ( MOC_headers

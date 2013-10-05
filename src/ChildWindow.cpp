@@ -9,11 +9,13 @@
 #include "ShootingAngleFinder.h"
 
 #include "ShootingSimulator.h"
+#include "SurfaceDetector.h"
 
 #include "Bullet.h"
 #include "Hoverball.h"
 #include "Boomerang.h"
 #include "Splitter.h"
+#include "Tunneler.h"
 
 #include <QPainter>
 #include <QPixmap>
@@ -125,6 +127,9 @@ void ChildWindow::updateOverlay()
 
 	m_debugPoints.clear();
 	m_enemyTargetInfos.clear();
+	m_tracerAboveGround.clear();
+	m_tracerPoints.clear();
+
 	m_angle = -1;
 
 	// step 1: find the players position
@@ -179,10 +184,20 @@ void ChildWindow::updateOverlay()
 				}
 			}
 
-			// step 6: TESTING SIMULATION
-			
 
-			ShootingSimulator sim( QPoint( g.width(), g.height() ) );
+			// TESTING surface extractor
+			vector<int> surface = SurfaceDetector::extractSurface( pic, m_playerPosition );
+		
+			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
+			/*
+			for (int x = 0; x < surface.size(); x++)
+			{
+				m_debugPoints.push_back( QPoint( x, surface[x] ) );
+			}
+			*/
+
+			// simulation
+			ShootingSimulator sim( QPoint( g.width(), g.height() ), surface );
 
 
 			/* shot simulation */
@@ -205,11 +220,8 @@ void ChildWindow::updateOverlay()
 			for (int i = -relativeCount; i <= relativeCount; i++)
 			{
 				if (relativeCount == -1) break;
-
-				cout << "Bullet with i = " << i << endl;
-
 				Bullet* t = new Bullet();
-				t->setPosition( m_playerPosition );
+				t->setPosition( gunPoint );
 				t->setAngle( m_settingsUi->spinBoxAngle->value() + i*6 );
 				t->setVelocity( m_settingsUi->spinBoxPower->value() );
 				sim.addBullet( t );
@@ -219,7 +231,7 @@ void ChildWindow::updateOverlay()
 			if (m_settingsUi->radioButtonHoverball->isChecked())
 			{
 				Hoverball* b = new Hoverball();
-				b->setPosition( m_playerPosition );
+				b->setPosition( gunPoint );
 				b->setAngle( m_settingsUi->spinBoxAngle->value() );
 				b->setVelocity( m_settingsUi->spinBoxPower->value() );
 				sim.addBullet( b );
@@ -229,18 +241,24 @@ void ChildWindow::updateOverlay()
 			if (m_settingsUi->radioButtonBoomerang->isChecked())
 			{
 				Boomerang* b = new Boomerang();
-				b->setPosition( m_playerPosition );
+				b->setPosition( gunPoint );
 				b->setAngle( m_settingsUi->spinBoxAngle->value() );
 				b->setVelocity( m_settingsUi->spinBoxPower->value() );
 				sim.addBullet( b );
 			}
 
+			/* Tunneler simulation */
+			if (m_settingsUi->radioButtonTunneler->isChecked())
+			{
+				Tunneler* t = new Tunneler();
+				t->setPosition( gunPoint );
+				t->setAngle( m_settingsUi->spinBoxAngle->value() );
+				t->setVelocity( m_settingsUi->spinBoxPower->value() );
+				sim.addBullet( t );
+			}
 
+			sim.simulate( 10000, 0.01, &m_tracerAboveGround );
 
-
-			sim.simulate( 10000, 0.01);
-
-			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
 			int dx = gunPoint.x() - m_playerPosition.x();
 			int dy = gunPoint.y() - m_playerPosition.y();
 
@@ -248,14 +266,9 @@ void ChildWindow::updateOverlay()
 			vector<QPoint> tracer = sim.getTracerPoints();
 			
 			cout << "Tracer: " << tracer.size() << endl;
-			// adjust tracer by moving it to the guns endpoint
-			for (int i = 0; i < tracer.size(); i++)
-			{
-				tracer[i].rx() += dx;
-				tracer[i].ry() += dy;
-			}
-
-			m_debugPoints.insert( m_debugPoints.end(), tracer.begin(), tracer.end() );
+			
+			m_tracerPoints.insert( m_tracerPoints.end(), tracer.begin(), tracer.end() );
+			//m_debugPoints.insert( m_debugPoints.end(), tracer.begin(), tracer.end() );
 
 
 			/*
@@ -279,8 +292,6 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
-		if (0 < i && i  < 10 ) continue; // TODO skip the first n points to unblock gun endpoint
-
 		//cout << "Cluster at: " << m_debugPoints[i].x() << ","
 		//		<< m_debugPoints[i].y() << endl;
 		
@@ -294,33 +305,18 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 			p.drawPoint( m_debugPoints[i] );
 	}
 
-
-	/*
-	// draw found angle at players position
-	QPoint pPos = m_playerPosition - QPoint( 20, -20 );
-	p.drawText( pPos, QString( "Angle: " ) + QString::number( m_angle ) );
-
-
-	// draw target infos!
-	for (int i = 0; i < m_enemyTargetInfos.size(); i++)
+	for (int i = 0; i < m_tracerPoints.size(); i++)
 	{
-		TargetInfo t = m_enemyTargetInfos[i];
+		p.setPen( m_tracerAboveGround[i] ? QColor( 255, 255, 0 ) : QColor( 255, 0, 255 ) );
+		// only draw if not too close to the player
+		int dx = m_tracerPoints[i].x() - m_playerPosition.x();
+		int dy = m_tracerPoints[i].y() - m_playerPosition.y();
+		dx = (dx < 0 ? -dx : dx);
+		dy = (dy < 0 ? -dy : dy);
 
-		QPoint drawPos = t.pos - QPoint( 20, -30 );
-
-		if (drawPos.x() < 10) drawPos.rx() = 10;
-		if (drawPos.x() > width() - 60) drawPos.rx() = width() - 60;
-
-		if (drawPos.y() > height() - 30) drawPos.ry() = t.pos.y() - 30;
-
-
-		p.drawText( drawPos, QString( "Vel.: " ) + QString::number( t.velocity ) );
-		drawPos.ry() += 10;
-
-		p.drawText( drawPos, QString( "Miss: " ) + QString::number( t.miss ) );
-
+		if (dx + dy > 15)
+			p.drawPoint( m_tracerPoints[i] );
 	}
-	*/
 
 	p.end();
 }

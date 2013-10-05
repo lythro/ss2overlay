@@ -7,13 +7,13 @@
 #include <vector>
 using std::vector;
 
-
 class ShootingSimulator
 {
 public:
 	// setup
-	ShootingSimulator( QPoint fieldsize )
+	ShootingSimulator( QPoint fieldsize, vector<int> map )
 	{
+		m_obstacles = map;
 		m_fieldSize = fieldsize;
 	}
 
@@ -27,14 +27,14 @@ public:
 		m_bullets.push_back( b );
 	}
 
-	void setObstacles( vector<QPoint> o )
+	void setObstacles( vector<int> o )
 	{
 		m_obstacles = o;
 	}
 
 
 	// simulation
-	void simulate( int steps = 50000, float step_size = 0.01 );
+	void simulate( int steps = 50000, float step_size = 0.01, vector<bool>* ground_status = NULL );
 
 	// visualization
 	vector<QPoint> getTracerPoints()
@@ -59,7 +59,7 @@ private:
 
 	// obstacles for collision checking
 	// i.e. the ground.
-	vector<QPoint> m_obstacles;
+	vector<int> m_obstacles;
 
 	// bullets to simulate
 	vector<Bullet*> m_bullets;

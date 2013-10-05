@@ -55,6 +55,10 @@ private:
 	QPoint m_playerPosition;
 	vector<TargetInfo> m_enemyTargetInfos;
 	vector<QPoint> m_debugPoints;
+
+	vector<QPoint> m_tracerPoints;
+	vector<bool> m_tracerAboveGround;
+
 	int m_angle;
 };
 
