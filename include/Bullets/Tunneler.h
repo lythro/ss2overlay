@@ -15,7 +15,7 @@ public:
 		m_position.ry() += m_vy * stepsize;
 
 		// inverse gravity if underground
-		int vz = m_aboveGround ? +1 : -1;
+		float vz = m_aboveGround ? +1 : -0.97;
 
 		setVelocity( m_vx + m_ax * stepsize,
 					m_vy + vz * m_ay * stepsize );

@@ -48,11 +48,11 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 			// no need for sign-check,
 			// searching from the sky to the bottom
 			// sky: black, ground: blue
-			if (tval - val > 150)
+			if (tval - val > 170)
 			{
 				// check if blue-part is greater then the rest
-				if (!( tcolor.blue() - 15 > tcolor.green() &&
-					   tcolor.blue() - 15 > tcolor.red()))
+				if (!( tcolor.blue() - 50 > tcolor.green() &&
+					   tcolor.blue() - 50 > tcolor.red()))
 				{
 					// if not - no found.
 					val = tval;
