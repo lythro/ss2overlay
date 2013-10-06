@@ -329,7 +329,7 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 		dx = (dx < 0 ? -dx : dx);
 		dy = (dy < 0 ? -dy : dy);
 
-		if (dx + dy > 15)
+		if (dx + dy > 20)
 			p.drawPoint( m_tracerPoints[i] );
 	}
 

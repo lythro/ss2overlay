@@ -212,7 +212,7 @@ QPoint ShootingAngleFinder::findGunEndpoint(QPixmap* pixmap, QPoint origin, QCol
 		int dy = p.y() - origin.y();
 		
 		//if (sqrt( dx*dx + dy*dy ) + 1. < compare)
-		if ( dx*dx + dy*dy < maxDist - 2. )
+		if ( dx*dx + dy*dy < maxDist )
 		{
 			continue;
 		}

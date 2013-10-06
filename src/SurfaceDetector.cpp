@@ -21,10 +21,10 @@ vector<int> SurfaceDetector::extractSurface( QPixmap& pic, QPoint origin )
 
 	for (int x = 1; x < width; x++)
 	{
-		if (origin.x()-5 < x && x < origin.x()+5)
+		if (origin.x()-10 < x && x < origin.x()+10)
 		{
 			// ignore some space around the player!
-			surface.push_back( origin.y() + 2 );
+			surface.push_back( -1 );
 			continue;
 		}
 
