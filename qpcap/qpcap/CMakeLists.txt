@@ -28,7 +28,7 @@ SET( header
 
 QT4_WRAP_CPP( MOC_headers ${header} )
 
-INCLUDE_DIRECTORIES( ${QT_INCLUDES} )
+INCLUDE_DIRECTORIES( ${QT_INCLUDES} ./winheader )
 
 message( ${QT_LIBRARIES} )
 
