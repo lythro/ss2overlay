@@ -1,6 +1,6 @@
 cmake_minimum_required( VERSION 2.6 )
 
-FIND_PACKAGE (Qt4 REQUIRED)
+FIND_PACKAGE (Qt4 COMPONENTS QtCore QtNetwork REQUIRED)
 
 
 ADD_DEFINITIONS (${QT_DEFINITIONS})
@@ -30,4 +30,8 @@ QT4_WRAP_CPP( MOC_headers ${header} )
 
 INCLUDE_DIRECTORIES( ${QT_INCLUDES} )
 
-ADD_LIBRARY( qpcap ${sources} ${MOC_headers} )
+message( ${QT_LIBRARIES} )
+
+ADD_LIBRARY( qpcap SHARED ${sources} ${headers} ${MOC_headers} )
+
+TARGET_LINK_LIBRARIES( qpcap pcap ${QT_LIBRARIES} )

@@ -31,6 +31,8 @@ SET ( App_sources
 	ShootingAngleFinder.cpp
 	ShootingSimulator.cpp
 	SurfaceDetector.cpp
+
+	MapSniffer.cpp
 )
 
 QT4_WRAP_CPP ( MOC_headers
@@ -39,12 +41,14 @@ QT4_WRAP_CPP ( MOC_headers
 
 	../include/MainWindow.h
 	../include/ChildWindow.h
+	../include/MapSniffer.h
 )
 
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/include
-	${CMAKE_SOURCE_DIR}/include/Bullets 
+	${CMAKE_SOURCE_DIR}/include/Bullets
+	${CMAKE_SOURCE_DIR}/qpcap/qpcap
 	${QT_INCLUDES}
 	${CMAKE_CURRENT_BINARY_DIR}
 )

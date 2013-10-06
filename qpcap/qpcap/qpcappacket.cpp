@@ -19,6 +19,7 @@
  */
 
 #include <QDebug>
+#include <QHostAddress>
 
 #include <arpa/inet.h>
 #include <netinet/ether.h>
@@ -134,13 +135,13 @@ int QPcapIpPacket::protocol() const
 QHostAddress QPcapIpPacket::source() const
 {
     const iphdr *ip = reinterpret_cast<const iphdr *>(packet);
-    return QHostAddress( ntohl(ip->saddr) );
+    return QHostAddress( (quint32)ntohl(ip->saddr) );
 }
 
 QHostAddress QPcapIpPacket::dest() const
 {
     const iphdr *ip = reinterpret_cast<const iphdr *>(packet);
-    return QHostAddress( ntohl(ip->daddr) );
+    return QHostAddress( (quint32)ntohl(ip->daddr) );
 }
 
 int QPcapIpPacket::length() const
