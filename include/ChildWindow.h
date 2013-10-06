@@ -4,6 +4,8 @@
 #include "ui_childwindow.h"
 #include "ui_settings.h"
 
+#include "MapSniffer.h"
+
 #include <QMainWindow>
 #include <QPixmap>
 #include <QLabel>
@@ -28,6 +30,7 @@ public:
 private slots:
 	void updateOverlay();
 	void estimateCurrentState();
+	void recieveMap(vector<int>);
 
 private:
 	void paintEvent(QPaintEvent*);
@@ -41,7 +44,11 @@ private:
 
     Ui::ChildWindow *ui;
 
-	// quick and dirty
+	// map-sniffer
+	MapSniffer m_mapSniffer;
+	vector<int> m_map;
+
+	// quick and dirty settings
 	Ui::SettingsWidget* m_settingsUi;
 	QWidget m_settingsWidget;
 

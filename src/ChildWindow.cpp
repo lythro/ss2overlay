@@ -11,6 +11,8 @@
 #include "ShootingSimulator.h"
 #include "SurfaceDetector.h"
 
+#include "MapSniffer.h"
+
 #include "Bullet.h"
 #include "Hoverball.h"
 #include "Boomerang.h"
@@ -91,7 +93,18 @@ ChildWindow::ChildWindow(QWidget *parent) :
 	// setup timer
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
 	m_timer.start( 1000 );
+
+	// setup map-sniffer
+	QObject::connect( &m_mapSniffer, SIGNAL(mapUpdate(vector<int>)), this, SLOT(recieveMap(vector<int>)) );
+	m_mapSniffer.start();
 }
+
+
+void ChildWindow::recieveMap(vector<int> map)
+{
+	m_map = map;
+}
+
 
 void ChildWindow::estimateCurrentState()
 {
@@ -303,8 +316,7 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 	QPainter p(this);
 	p.setPen( QColor( 255, 255, 0 ) );
 
-	//cout << "to draw: " << m_debugPoints.size() << endl;
-
+	// draw debug-points
 	for (int i = 0; i < m_debugPoints.size(); i++)
 	{
 		//cout << "Cluster at: " << m_debugPoints[i].x() << ","
@@ -320,6 +332,25 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 			p.drawPoint( m_debugPoints[i] );
 	}
 
+
+	// draw map-points/ lines
+	cout << "map: " << m_map.size() << endl;
+	p.setPen( QColor( 255, 0, 255 ) );
+
+	if (m_map.size() > 0)
+	{
+		float scale = ((float)(this->width())) / m_map.size();
+		QPoint last( 0, m_map[0] );
+
+		for (int i = 1; i < m_map.size(); i++)
+		{
+			QPoint tmp( i*scale, m_map[i] );
+
+			p.drawLine( last, tmp );
+			last = tmp;
+		}
+	}
+	// draw tracer-points
 	for (int i = 0; i < m_tracerPoints.size(); i++)
 	{
 		p.setPen( m_tracerAboveGround[i] ? QColor( 255, 255, 0 ) : QColor( 255, 0, 255 ) );
