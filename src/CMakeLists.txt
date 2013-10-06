@@ -1,10 +1,12 @@
 FIND_PACKAGE (Qt4 REQUIRED)
 
+
 ADD_DEFINITIONS (${QT_DEFINITIONS})
 
 #SET( QT_USE_QTXML TRUE )
 #SET( QT_USE_QTOPENGL TRUE )
 SET( QT_WRAP_CPP TRUE )
+
 
 INCLUDE (${QT_USE_FILE})
 
@@ -53,7 +55,10 @@ ADD_EXECUTABLE ( ss2overlay
 	${UI_headers}
 )
 
-TARGET_LINK_LIBRARIES( ss2overlay ${QT_LIBRARIES} )
+LINK_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/../qpcap/qpcap )
+
+
+TARGET_LINK_LIBRARIES( ss2overlay ${QT_LIBRARIES} qpcap ) 
 
 if ( UNIX )
 		TARGET_LINK_LIBRARIES( ss2overlay Xext ) # for X11 access (click-through-window)
