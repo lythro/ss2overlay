@@ -24,7 +24,11 @@
 #include <QObject>
 #include <QString>
 
-#include <sys/time.h>
+#ifdef _WIN32
+	#include <Windows.h>
+#else
+	#include <sys/time.h>
+#endif
 
 class QPcapHeader
 {
