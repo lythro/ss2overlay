@@ -15,17 +15,14 @@ public:
 		m_bouncing = 1;
 	}
 
-	virtual void handleCollision( vector<int>& map )
+	virtual void handleCollision( vector<int>& map, float scale )
 	{
 		bool before = m_aboveGround;
-
-		Bullet::handleCollision( map ); // this also updates the above-ground-status
-
+		Bullet::handleCollision( map, scale ); // this also updates the above-ground-status
 		bool after = m_aboveGround;
 
-		if (x() < 4 || x() > map.size() -5) return;
 
-		// TODO ground collision / bounce
+		// above --> !above: collision with ground.
 		if (before && !after)
 		{
 			if (!m_bouncing)
@@ -41,11 +38,25 @@ public:
 			// 2. "bouncing"
 			
 			// 1. normal estimation
-			// "plain-vector"
-			int px = 6;
-			int py = map[x() + 3] - map[x() - 3];
+			// vector created by the points left and right of me
+			// indices
+			int left_index = (int)(m_position.x()/scale + 0.5);
+			if (left_index < 0) left_index = 0;
+			if (left_index > map.size()-2) left_index = map.size()-2;
+			int right_index = left_index + 1;
 
-			// "normal-vector"
+			// difference in x between both points
+			float dx = scale * 1.;
+			// difference in y between both points
+			float dy = map[right_index] - map[left_index];
+			// incline
+			float m = dy/dx;
+
+			float px = 1.;
+			float py = m * 1.;
+
+
+			// "normal-vector" by rotation the line-vector
 			float nx = -py;
 			float ny =  px;
 			// normalize

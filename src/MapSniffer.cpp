@@ -89,31 +89,31 @@ void MapSniffer::processPackage(const uchar* raw)
 				vector<int> map;
 
 				QByteArray tmp;
-				for (int i = 0; i < data.size(); i++)
+				// 38 byte-header -- skip that
+				for (int i = 37; i < data.size(); i++)
 				{
-					// splitter?
-					if (data[i] == '\05' || data[i] == '\04')
+					if (data[i] == '\04')
 					{
-						if (0 < tmp.size() && tmp.size() < 3)
-						{
-							// convert the value from binary to int
-							char* buf = new char[tmp.size()];
-							for (int j = 0; j < tmp.size(); j++) buf[tmp.size() - 1 - j] = tmp[j];
-
-							int val = *((unsigned short*) buf);
-
-							delete[] buf;
-
-							map.push_back( val );
-
-						}
-						tmp.clear();
+						// 04: only one byte of data
+						map.push_back( (unsigned char) data[++i] );
 					}
-					else
+					else if(data[i] == '\05')
 					{
-						// data.
-						tmp.append( data[i] );
+						// 05: two bytes of data
+						unsigned char* buf = new unsigned char[2];
+						buf[1] = data[++i];
+						buf[0] = data[++i];
+
+
+						int val = *((unsigned short*) buf);
+
+						delete[] buf;
+
+						map.push_back( val );
 					}
+
+					// got everything, rest is other data
+					if (map.size() == 161) break;
 				}
 
 				emit mapUpdate(map);

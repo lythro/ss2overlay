@@ -21,11 +21,11 @@ public:
 					m_vy + vz * m_ay * stepsize );
 	}
 
-	virtual void handleCollision( vector<int>& map )
+	virtual void handleCollision( vector<int>& map, float scale )
 	{
 		bool below = !m_aboveGround;
 
-		Bullet::handleCollision( map );
+		Bullet::handleCollision( map, scale );
 
 		if (below && m_aboveGround)
 		{
