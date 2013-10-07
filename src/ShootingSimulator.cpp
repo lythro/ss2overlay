@@ -35,7 +35,9 @@ void ShootingSimulator::simulate( int steps, float step_size, vector<bool>* grou
 			b->step( step_size );
 
 			// check collisions
-			b->handleCollision( m_obstacles, ((float)m_fieldSize.x()/(float)m_obstacles.size()) );
+			float scale = 1.;
+			if (m_obstacles.size() > 1) scale = (float)m_fieldSize.x()/(float)m_obstacles.size();
+			b->handleCollision( m_obstacles, scale );
 		}
 	}
 }

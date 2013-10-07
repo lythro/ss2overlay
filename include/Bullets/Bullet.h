@@ -130,6 +130,7 @@ public:
 protected:
 	virtual void checkAboveGround( vector<int>& map, float scale )
 	{
+		if (map.size() < 2) return;
 
 		int left_index = (int)(m_position.x()/scale + 0.5);
 		if (left_index < 0) left_index = 0;

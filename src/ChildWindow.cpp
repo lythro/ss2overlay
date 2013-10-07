@@ -334,11 +334,11 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 
 	// draw map-points/ lines
-	cout << "map: " << m_map.size() << endl;
+	//cout << "map: " << m_map.size() << endl;
 
-	if (m_map.size() > 0)
+	if (m_map.size() > 1)
 	{
-		float scale = ((float)(this->width())) / m_map.size();
+		float scale = ((float)(this->width())) / (m_map.size()-1);
 		QPoint last( 0, m_map[0] );
 
 		for (int i = 1; i < m_map.size(); i++)
