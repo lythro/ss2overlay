@@ -45,9 +45,9 @@
  *  * Structure of a DEC/Intel/Xerox or 802.3 Ethernet header.
  *   */
 struct	ether_header {
-			u_int8_t	ether_dhost[ETHER_ADDR_LEN];
-				u_int8_t	ether_shost[ETHER_ADDR_LEN];
-					u_int16_t	ether_type;
+			unsigned __int8	ether_dhost[ETHER_ADDR_LEN];
+				unsigned __int8	ether_shost[ETHER_ADDR_LEN];
+					unsigned __int16	ether_type;
 };
 
 /*

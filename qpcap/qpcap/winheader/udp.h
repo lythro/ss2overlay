@@ -39,10 +39,10 @@
  *   * Per RFC 768, September, 1981.
  *    */
 struct udphdr {
-			u_int16_t	uh_sport;		/* source port */
-				u_int16_t	uh_dport;		/* destination port */
-					u_int16_t	uh_ulen;		/* udp length */
-						u_int16_t	uh_sum;			/* udp checksum */
+			unsigned __int16	uh_sport;		/* source port */
+				unsigned __int16	uh_dport;		/* destination port */
+					unsigned __int16	uh_ulen;		/* udp length */
+						unsigned __int16	uh_sum;			/* udp checksum */
 };
 
 #define TFTP_PORT 69		/*XXX*/
