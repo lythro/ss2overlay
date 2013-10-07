@@ -48,19 +48,19 @@
  *      * against negative integers quite easily, and fail in subtle ways.
  *       */
 struct ip {
-			u_int8_t	ip_vhl;		/* header length, version */
+			unsigned __int8	ip_vhl;		/* header length, version */
 #define IP_V(ip)	(((ip)->ip_vhl & 0xf0) >> 4)
 #define IP_HL(ip)	((ip)->ip_vhl & 0x0f)
-				u_int8_t	ip_tos;		/* type of service */
-					u_int16_t	ip_len;		/* total length */
-						u_int16_t	ip_id;		/* identification */
-							u_int16_t	ip_off;		/* fragment offset field */
+				unsigned __int8	ip_tos;		/* type of service */
+					unsigned __int16	ip_len;		/* total length */
+						unsigned __int16	ip_id;		/* identification */
+							unsigned __int16	ip_off;		/* fragment offset field */
 #define	IP_DF 0x4000			/* dont fragment flag */
 #define	IP_MF 0x2000			/* more fragments flag */
 #define	IP_OFFMASK 0x1fff		/* mask for fragmenting bits */
-								u_int8_t	ip_ttl;		/* time to live */
-									u_int8_t	ip_p;		/* protocol */
-										u_int16_t	ip_sum;		/* checksum */
+								unsigned __int8	ip_ttl;		/* time to live */
+									unsigned __int8	ip_p;		/* protocol */
+										unsigned __int16	ip_sum;		/* checksum */
 											struct	in_addr ip_src,ip_dst;	/* source and dest address */
 };
 
@@ -120,17 +120,17 @@ struct ip {
  *  * Time stamp option structure.
  *   */
 struct	ip_timestamp {
-			u_int8_t	ipt_code;	/* IPOPT_TS */
-				u_int8_t	ipt_len;	/* size of structure (variable) */
-					u_int8_t	ipt_ptr;	/* index of current entry */
-						u_int8_t	ipt_oflwflg;	/* flags, overflow counter */
+			unsigned __int8	ipt_code;	/* IPOPT_TS */
+				unsigned __int8	ipt_len;	/* size of structure (variable) */
+					unsigned __int8	ipt_ptr;	/* index of current entry */
+						unsigned __int8	ipt_oflwflg;	/* flags, overflow counter */
 #define IPTS_OFLW(ip)	(((ipt)->ipt_oflwflg & 0xf0) >> 4)
 #define IPTS_FLG(ip)	((ipt)->ipt_oflwflg & 0x0f)
 							union ipt_timestamp {
-											u_int32_t ipt_time[1];
+											unsigned __int32 ipt_time[1];
 													struct	ipt_ta {
 																		struct in_addr ipt_addr;
-																					u_int32_t ipt_time;
+																					unsigned __int32 ipt_time;
 																							} ipt_ta[1];
 														} ipt_timestamp;
 };
@@ -160,5 +160,5 @@ struct	ip_timestamp {
 #define	IP_MSS		576		/* default maximum segment size */
 
 /* in print-ip.c */
-extern u_int32_t ip_finddst(const struct ip *);
+extern unsigned __int32 ip_finddst(const struct ip *);
 
