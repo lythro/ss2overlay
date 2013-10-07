@@ -75,17 +75,20 @@ public:
 	}
 
 	// allow the simulator to hand collision handling to the bullet
-	virtual void handleCollision( vector<int>& map )
+	virtual void handleCollision( vector<int>& map, float scale  )
 	{
-		checkAboveGround( map );
+		bool oldAbove = m_aboveGround;
+		checkAboveGround( map, scale );
+
+		if (oldAbove != m_aboveGround && m_checkValid) m_valid = false;
 		
 		// check for collision with the borders of the map
 		if (map.size() < 2) return;
 
 		// first: bouncing from the side of the map
 			/* bounce from the left */
-		if (	(-2 < x() 				&& x() < 1)
-			||	( map.size() + 1 > x() 	&& x() >= map.size() -1) )
+		if (	( x() < 1)
+			||	( x() >= ((map.size()-1) * scale)) )
 		{
 			int dy = (x() <= 0 ? y() - map[0] : y() - map[map.size()-1]);
 			dy = dy > 0 ? dy : -dy;
@@ -95,13 +98,9 @@ public:
 				int vz   = (x() < 1 ? +1 : -1);
 				int corr = (vz * m_vx > 0 ? +1 : -1);
 				// just invert the x-direction
-				cout << "corr: " << corr << endl;
 				setVelocity( corr * m_vx, m_vy );
 			}
 		}
-
-		if (0 <= x() && x() < map.size())
-			m_aboveGround = (map[x()] > y());
 	}
 
 	// these functions should not be needed
@@ -129,22 +128,26 @@ public:
 	virtual float ay(){ return m_ay; } // TODO: adjust this!
 
 protected:
-	virtual void checkAboveGround( vector<int>& map )
+	virtual void checkAboveGround( vector<int>& map, float scale )
 	{
-		if (map.size() <= x()) 	return;
-		if (x() < 0)			return;
-	
-		// before: above, now: below  or
-		// before: below, now: above
-		// --> collision
-		if (  ( m_aboveGround && map[x()] <= y() )
-			||(!m_aboveGround && map[x()] >= y() ) )
-		{
-			if (m_checkValid)
-			{
-				m_valid = false;
-			}
-		}
+
+		int left_index = (int)(m_position.x()/scale + 0.5);
+		if (left_index < 0) left_index = 0;
+		if (left_index > map.size()-2) left_index = map.size()-2;
+
+		int right_index = left_index + 1;
+
+		// difference between point left of me and my x position
+		float dx = m_position.x() - (left_index * scale);
+		// differnce of height between points right and left of me
+		float dy = map[right_index] - map[left_index];
+		// incline of the line between those points
+		float m = dy/(scale * 1.);
+		// line height at my position
+		float lh = map[left_index] + m * dx;
+
+		// above the ground if my y is less than lh
+		m_aboveGround = m_position.y() < lh;
 	}
 
 

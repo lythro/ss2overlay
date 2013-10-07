@@ -221,7 +221,7 @@ void ChildWindow::updateOverlay()
 			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
 
 			// simulation
-			ShootingSimulator sim( QPoint( g.width(), g.height() ), surface );
+			ShootingSimulator sim( QPoint( g.width(), g.height() ), m_map );
 
 
 			/* shot simulation */
@@ -295,7 +295,7 @@ void ChildWindow::updateOverlay()
 			}
 
 
-			sim.simulate( 10000, 0.01, &m_tracerAboveGround );
+			sim.simulate( 20000, 0.005, &m_tracerAboveGround );
 
 			int dx = gunPoint.x() - m_playerPosition.x();
 			int dy = gunPoint.y() - m_playerPosition.y();
@@ -335,7 +335,6 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 
 	// draw map-points/ lines
 	cout << "map: " << m_map.size() << endl;
-	p.setPen( QColor( 255, 0, 255 ) );
 
 	if (m_map.size() > 0)
 	{
@@ -346,7 +345,12 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 		{
 			QPoint tmp( i*scale, m_map[i] );
 
+			p.setPen( QColor( 255, 0, 255 ) );
 			p.drawLine( last, tmp );
+			
+			p.setPen( QColor( 255, 255, 0 ) );
+			p.drawPoint( last );
+
 			last = tmp;
 		}
 	}
