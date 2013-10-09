@@ -18,6 +18,11 @@
  * License along with this library.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* modified by github/lythro
+ *
+ * + uint32_t deviceIp()
+ */
+
 #ifndef QPCAP_H
 #define QPCAP_H
 
@@ -73,6 +78,9 @@ public:
 
     bool isBlocking() const;
     void setBlocking( bool enable );
+
+	void deviceNetMask(QString device, unsigned int &net,
+						unsigned int &mask);
 
     QPcapHeader header() const;
     const uchar *packet() const;

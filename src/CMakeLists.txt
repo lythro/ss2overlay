@@ -32,7 +32,7 @@ SET ( App_sources
 	ShootingSimulator.cpp
 	SurfaceDetector.cpp
 
-	MapSniffer.cpp
+	GameSniffer.cpp
 )
 
 QT4_WRAP_CPP ( MOC_headers
@@ -41,7 +41,7 @@ QT4_WRAP_CPP ( MOC_headers
 
 	../include/MainWindow.h
 	../include/ChildWindow.h
-	../include/MapSniffer.h
+	../include/GameSniffer.h
 )
 
 

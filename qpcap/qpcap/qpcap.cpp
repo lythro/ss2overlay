@@ -126,7 +126,6 @@ bool QPcap::open( const QString &dev, int snaplen, bool promisc )
                                 promisc,
                                 PCAP_TIMEOUT,
                                 d->errbuf );
-
     return isValid();
 }
 
@@ -165,6 +164,16 @@ bool QPcap::isBlocking() const
 void QPcap::setBlocking( bool enable )
 {
     pcap_setnonblock( d->handle, !enable, d->errbuf );
+}
+
+void QPcap::deviceNetMask(QString device,
+				unsigned int &net, unsigned int &mask)
+{
+	if (pcap_lookupnet( device.toLocal8Bit().constData(), 
+					&net, &mask, d->errbuf ) == -1)
+	{
+		net = mask = -1;
+	}
 }
 
 void QPcap::packet_callback( uchar *self, const pcap_pkthdr *header, const uchar *packet )

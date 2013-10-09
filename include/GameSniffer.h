@@ -1,5 +1,5 @@
-#ifndef MAPSNIFFER_H_
-#define MAPSNIFFER_H_
+#ifndef GAMESNIFFER_H_
+#define GAMESNIFFER_H_
 
 #include "qpcap.h"
 #include <QObject>
@@ -7,13 +7,13 @@
 #include <vector>
 using std::vector;
 
-class MapSniffer : public QObject
+class GameSniffer : public QObject
 {
 	Q_OBJECT
 
 public:
-	MapSniffer();
-	~MapSniffer();
+	GameSniffer();
+	~GameSniffer();
 
 	// start sniffing
 	void start();
@@ -24,8 +24,10 @@ public slots:
 
 signals:
 	void mapUpdate(vector<int> map);
+	void angleUpdate(int angle);
 
 private:
+	unsigned int m_net, m_mask;
 	bool m_running;
 	QPcap m_pcap;
 };

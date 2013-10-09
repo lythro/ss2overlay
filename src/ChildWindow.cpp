@@ -11,7 +11,7 @@
 #include "ShootingSimulator.h"
 #include "SurfaceDetector.h"
 
-#include "MapSniffer.h"
+#include "GameSniffer.h"
 
 #include "Bullet.h"
 #include "Hoverball.h"
@@ -95,8 +95,8 @@ ChildWindow::ChildWindow(QWidget *parent) :
 	m_timer.start( 1000 );
 
 	// setup map-sniffer
-	QObject::connect( &m_mapSniffer, SIGNAL(mapUpdate(vector<int>)), this, SLOT(recieveMap(vector<int>)) );
-	m_mapSniffer.start();
+	QObject::connect( &m_sniffer, SIGNAL(mapUpdate(vector<int>)), this, SLOT(recieveMap(vector<int>)) );
+	m_sniffer.start();
 }
 
 
@@ -152,7 +152,7 @@ void ChildWindow::updateOverlay()
 
 	if (my_position.size() > 1 || my_position.empty())
 	{
-		cout << "player position not distinct" << endl;
+		//cout << "player position not distinct" << endl;
 	}
 	else
 	{
@@ -303,7 +303,7 @@ void ChildWindow::updateOverlay()
 			// viz
 			vector<QPoint> tracer = sim.getTracerPoints();
 			
-			cout << "Tracer: " << tracer.size() << endl;
+			//cout << "Tracer: " << tracer.size() << endl;
 			
 			m_tracerPoints.insert( m_tracerPoints.end(), tracer.begin(), tracer.end() );
 		}

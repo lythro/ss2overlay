@@ -4,7 +4,7 @@
 #include "ui_childwindow.h"
 #include "ui_settings.h"
 
-#include "MapSniffer.h"
+#include "GameSniffer.h"
 
 #include <QMainWindow>
 #include <QPixmap>
@@ -45,7 +45,7 @@ private:
     Ui::ChildWindow *ui;
 
 	// map-sniffer
-	MapSniffer m_mapSniffer;
+	GameSniffer m_sniffer;
 	vector<int> m_map;
 
 	// quick and dirty settings
