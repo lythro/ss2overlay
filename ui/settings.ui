@@ -6,22 +6,59 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>227</width>
-    <height>339</height>
+    <width>264</width>
+    <height>392</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="3" column="0">
+   <item row="9" column="0">
+    <widget class="QRadioButton" name="radioButtonHoverball">
+     <property name="text">
+      <string>Hover - Ball</string>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0">
+    <spacer name="verticalSpacer_2">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::MinimumExpanding</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>10</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="4" column="0">
     <widget class="QPushButton" name="pushButton">
      <property name="text">
       <string>estimate current state</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item row="10" column="0">
+    <widget class="QRadioButton" name="radioButtonBoomerang">
+     <property name="text">
+      <string>Boomerang</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QRadioButton" name="radioButtonBouncer">
+     <property name="text">
+      <string>Bouncer</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0">
     <widget class="QRadioButton" name="radioButtonShot">
      <property name="text">
       <string>Shot</string>
@@ -31,51 +68,10 @@
      </property>
     </widget>
    </item>
-   <item row="6" column="0">
-    <widget class="QRadioButton" name="radioButtonThreeshot">
-     <property name="text">
-      <string>Three - Shot</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0">
-    <widget class="QRadioButton" name="radioButtonHoverball">
-     <property name="text">
-      <string>Hover - Ball</string>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0">
-    <widget class="QRadioButton" name="radioButtonFiveshot">
-     <property name="text">
-      <string>Five - Shot</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="0">
-    <widget class="QRadioButton" name="radioButtonBoomerang">
-     <property name="text">
-      <string>Boomerang</string>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="0">
+   <item row="11" column="0">
     <widget class="QRadioButton" name="radioButtonTunneler">
      <property name="text">
       <string>Tunneler</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QSpinBox" name="spinBoxPower">
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="prefix">
-      <string>Power: </string>
-     </property>
-     <property name="maximum">
-      <number>100</number>
      </property>
     </widget>
    </item>
@@ -95,41 +91,93 @@
      </property>
     </spacer>
    </item>
-   <item row="4" column="0">
-    <spacer name="verticalSpacer_2">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeType">
-      <enum>QSizePolicy::MinimumExpanding</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>10</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="2" column="0">
-    <widget class="QSpinBox" name="spinBoxAngle">
-     <property name="alignment">
-      <set>Qt::AlignCenter</set>
-     </property>
-     <property name="prefix">
-      <string>Angle : </string>
-     </property>
-     <property name="maximum">
-      <number>359</number>
-     </property>
-    </widget>
-   </item>
-   <item row="11" column="0">
-    <widget class="QRadioButton" name="radioButtonBouncer">
+   <item row="8" column="0">
+    <widget class="QRadioButton" name="radioButtonFiveshot">
      <property name="text">
-      <string>Bouncer</string>
+      <string>Five - Shot</string>
      </property>
     </widget>
+   </item>
+   <item row="7" column="0">
+    <widget class="QRadioButton" name="radioButtonThreeshot">
+     <property name="text">
+      <string>Three - Shot</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <layout class="QGridLayout" name="gridLayout_2">
+     <item row="1" column="1">
+      <widget class="QSpinBox" name="spinBoxAngle">
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="prefix">
+        <string>Angle : </string>
+       </property>
+       <property name="maximum">
+        <number>359</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="1">
+      <widget class="QSpinBox" name="spinBoxPower">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="alignment">
+        <set>Qt::AlignCenter</set>
+       </property>
+       <property name="prefix">
+        <string>Power: </string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QPushButton" name="pushButtonAutoPower">
+       <property name="enabled">
+        <bool>false</bool>
+       </property>
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+         <horstretch>0</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>0</height>
+        </size>
+       </property>
+       <property name="text">
+        <string>auto</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item row="1" column="0">
+      <widget class="QPushButton" name="pushButtonAutoAngle">
+       <property name="text">
+        <string>auto</string>
+       </property>
+       <property name="checkable">
+        <bool>true</bool>
+       </property>
+       <property name="checked">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

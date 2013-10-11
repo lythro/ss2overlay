@@ -24,6 +24,7 @@ public:
 		m_vx = 0.;
 		m_vy = 0.;
 		m_angle = 0.;
+		m_lastStepsize = 1.;
 
 		m_ax = 0.;
 		m_ay = 9.5;
@@ -67,6 +68,10 @@ public:
 	// progression through time
 	virtual void step( float stepsize )
 	{
+		// backup of the old position and the stepsize
+		m_positionBefore = m_position;
+		m_lastStepsize = stepsize;
+
 		m_position.rx() += m_vx * stepsize;
 		m_position.ry() += m_vy * stepsize;
 
@@ -84,10 +89,7 @@ public:
 		
 		// check for collision with the borders of the map
 		if (map.size() < 2) return;
-
-		// first: bouncing from the side of the map
-			/* bounce from the left */
-		if (	( x() < 1)
+		if (	( x() <= 0)
 			||	( x() >= ((map.size()-1) * scale)) )
 		{
 			int dy = (x() <= 0 ? y() - map[0] : y() - map[map.size()-1]);
@@ -95,10 +97,26 @@ public:
 
 			if (dy < 100)
 			{
+				
 				int vz   = (x() < 1 ? +1 : -1);
 				int corr = (vz * m_vx > 0 ? +1 : -1);
+
+				// to prevent oscillation, only do this once.
+				if (corr == -1)
+				{
+					// set the x position to the exact border
+					if (x() <= 0) m_position.rx() = 0.;
+					if (x() > 0)  m_position.rx() = (map.size()-1) * scale;
+				}
+
 				// just invert the x-direction
 				setVelocity( corr * m_vx, m_vy );
+			}
+			else
+			{
+				// at the border and not bouncing?
+				// --> invalid, no matter what.
+				m_valid = false;
 			}
 		}
 	}
@@ -120,19 +138,25 @@ public:
 	float vx(){ return m_vx; }
 	float vy(){ return m_vy; }
 
+
 	// In shellshock, gravity and air resistance are not equal for every bullet type.
-	// Hence the bullet-classes need to know their own forces
+	// Hence the bullet-classes need to know their own forces:
+	//
+	// Update:
+	// This was intended to be re-implemented by the bullets in
+	// a first version of this tool. But for the sake of bouncers
+	// etc.. every bullet implements its own "step"-method (or "handleCollision")
 	
-	// in terms of accelleration
+	// accelleration
 	virtual float ax(){ return m_ax; }
-	virtual float ay(){ return m_ay; } // TODO: adjust this!
+	virtual float ay(){ return m_ay; }
 
 protected:
 	virtual void checkAboveGround( vector<int>& map, float scale )
 	{
 		if (map.size() < 2) return;
 
-		int left_index = (int)(m_position.x()/scale + 0.5);
+		int left_index = (int)(m_position.x()/scale); // do NOT round up!
 		if (left_index < 0) left_index = 0;
 		if (left_index > map.size()-2) left_index = map.size()-2;
 
@@ -153,8 +177,12 @@ protected:
 
 
 protected:
+	// last used step-size
+	float m_lastStepsize;
+
 	// position
 	QPointF m_position;
+	QPointF m_positionBefore;
 
 	// velocity
 	float m_vx;

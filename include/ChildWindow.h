@@ -31,6 +31,9 @@ private slots:
 	void updateOverlay();
 	void estimateCurrentState();
 	void recieveMap(vector<int>);
+	void recieveAngle(int);
+
+	void toggleAutoAngle();
 
 private:
 	void paintEvent(QPaintEvent*);
@@ -47,6 +50,8 @@ private:
 	// map-sniffer
 	GameSniffer m_sniffer;
 	vector<int> m_map;
+
+	bool m_autoAngle;
 
 	// quick and dirty settings
 	Ui::SettingsWidget* m_settingsUi;

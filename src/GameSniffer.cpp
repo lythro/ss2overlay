@@ -170,7 +170,7 @@ void GameSniffer::processPackage(const uchar* raw)
 							// the number of chars is encoded in the 6 remaining bit
 							int count = data[index] & '\x3F';
 
-							cout << "Char[" << count << "]: " << flush;
+							if (verbose) cout << "Char[" << count << "]: " << flush;
 							for (int i = 0; i < count; i++)
 							{
 								char c =  data[++index];
@@ -215,8 +215,8 @@ void GameSniffer::processPackage(const uchar* raw)
 					}
 				} // while
 
-				cout << "mapsize: " << map.size() << endl;
 				emit mapUpdate(map);
+
 			}
 			// but we are not only interested in "StartTurn"
 			// "TurretUpdate" gives us information about our precise shooting angle - as a double!
@@ -240,7 +240,8 @@ void GameSniffer::processPackage(const uchar* raw)
 						break;
 					}
 				}
-				cout << endl;
+				//cout << endl;
+
 				if (!match)
 				{
 					return;

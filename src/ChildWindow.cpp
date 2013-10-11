@@ -79,6 +79,10 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	QObject::connect( m_settingsUi->pushButton, SIGNAL(clicked()),
 					this, SLOT(estimateCurrentState()) );
+	QObject::connect( m_settingsUi->pushButtonAutoAngle, SIGNAL(clicked()),
+					this, SLOT(toggleAutoAngle()) );
+
+	m_autoAngle = true;
 
 	m_settingsWidget.show();
 
@@ -96,9 +100,23 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	// setup map-sniffer
 	QObject::connect( &m_sniffer, SIGNAL(mapUpdate(vector<int>)), this, SLOT(recieveMap(vector<int>)) );
+	QObject::connect( &m_sniffer, SIGNAL(angleUpdate(int)), this, SLOT(recieveAngle(int)) );
 	m_sniffer.start();
 }
 
+
+void ChildWindow::toggleAutoAngle()
+{
+	m_autoAngle = m_settingsUi->pushButtonAutoAngle->isChecked();
+}
+
+void ChildWindow::recieveAngle(int angle)
+{
+	if (m_autoAngle)
+	{
+		m_settingsUi->spinBoxAngle->setValue( angle );
+	}
+}
 
 void ChildWindow::recieveMap(vector<int> map)
 {

@@ -8,8 +8,12 @@ using std::endl;
 // everything else is inline
 void ShootingSimulator::simulate( int steps, float step_size, vector<bool>* ground_status )
 {
+	bool b = true;
+
 	for (int step = 0; step < steps; step++)
 	{
+		b = !b;
+
 		// for every bullet:
 		for (int i = 0; i < m_bullets.size(); i++)
 		{
@@ -26,7 +30,9 @@ void ShootingSimulator::simulate( int steps, float step_size, vector<bool>* grou
 			else
 			{
 				m_tracer.push_back( pos.toPoint() );
-				ground_status->push_back( m_bullets[i]->aboveGround() );
+				//ground_status->push_back( m_bullets[i]->aboveGround() );
+				//DEBUG
+				ground_status->push_back( b );
 
 			}
 
