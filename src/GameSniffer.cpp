@@ -259,7 +259,7 @@ void GameSniffer::processPackage(const uchar* raw)
 					char buf[8];
 					for (int i = 7; i >= 0; i--) buf[i] = data[++pos];
 
-					double tmp = (270. - (*((double*) buf) + 180.)) + 0.5;
+					double tmp = (270. - (*((double*) buf) + 180.)) + 0.5;		// TODO: this for the other types!
 					if (tmp < 0.) tmp += 360.;
 					angle = (int) tmp;
 				}
