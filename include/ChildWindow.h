@@ -47,8 +47,11 @@ private:
 
     Ui::ChildWindow *ui;
 
+#ifdef linux
 	// map-sniffer
 	GameSniffer m_sniffer;
+#endif
+
 	vector<int> m_map;
 
 	bool m_autoAngle;

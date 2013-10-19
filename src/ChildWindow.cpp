@@ -11,7 +11,10 @@
 #include "ShootingSimulator.h"
 #include "SurfaceDetector.h"
 
-#include "GameSniffer.h"
+// gamesniffer is not available under windows
+#ifdef linux
+	#include "GameSniffer.h"
+#endif
 
 #include "Bullet.h"
 #include "Hoverball.h"
@@ -84,6 +87,10 @@ ChildWindow::ChildWindow(QWidget *parent) :
 
 	m_autoAngle = true;
 
+#ifdef _WIN32
+	m_settingsUi->pushButtonAutoAngle->setEnabled( false );
+#endif
+
 	m_settingsWidget.show();
 
 
@@ -98,10 +105,13 @@ ChildWindow::ChildWindow(QWidget *parent) :
 	QObject::connect( &m_timer, SIGNAL(timeout()), this, SLOT(updateOverlay()) );
 	m_timer.start( 1000 );
 
+#ifdef linux
+	cout << "linux" << endl;
 	// setup map-sniffer
 	QObject::connect( &m_sniffer, SIGNAL(mapUpdate(vector<int>)), this, SLOT(recieveMap(vector<int>)) );
 	QObject::connect( &m_sniffer, SIGNAL(angleUpdate(int)), this, SLOT(recieveAngle(int)) );
 	m_sniffer.start();
+#endif
 }
 
 
@@ -218,8 +228,10 @@ void ChildWindow::updateOverlay()
 			}
 
 
-			// extracting the surface
-			vector<int> surface = SurfaceDetector::extractSurface( pic, m_playerPosition );
+
+#if WIN32
+			// extracting the surface - if the GameSniffer is not available
+			m_map = SurfaceDetector::extractSurface( pic, m_playerPosition );
 
 			// debug: show the surface in the debug-label!
 			QPixmap debugPixmap( g.width(), g.height() );
@@ -234,7 +246,8 @@ void ChildWindow::updateOverlay()
 
 			m_debugLabel->setPixmap( debugPixmap );
 			m_debugLabel->resize( g.width(), g.height() );
-		
+#endif
+
 			// and the position of the gun
 			QPoint gunPoint = ShootingAngleFinder::findGunEndpoint( &pic, m_playerPosition, colorPlayer.rgb() );
 

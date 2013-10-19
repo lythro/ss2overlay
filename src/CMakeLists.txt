@@ -31,27 +31,38 @@ SET ( App_sources
 	ShootingAngleFinder.cpp
 	ShootingSimulator.cpp
 	SurfaceDetector.cpp
-
-	GameSniffer.cpp
 )
 
-QT4_WRAP_CPP ( MOC_headers
-	# all header files that need to be moc'ed
-	# (the ones using Q_OBJECT macro)
+if ( UNIX )
+	SET( App_sources ${App_sources} GameSniffer.cpp )
+else()
+	message( "-- building without GameSniffer" )
+endif()
 
+SET ( m_headers
 	../include/MainWindow.h
 	../include/ChildWindow.h
-	../include/GameSniffer.h
 )
+
+if ( UNIX )
+	SET( m_headers ${m_headers} ../include/GameSniffer.h )
+endif()
+
+
+QT4_WRAP_CPP( MOC_headers ${m_headers} )
+
 
 
 INCLUDE_DIRECTORIES(
 	${CMAKE_SOURCE_DIR}/include
 	${CMAKE_SOURCE_DIR}/include/Bullets
-	${CMAKE_SOURCE_DIR}/qpcap/qpcap
 	${QT_INCLUDES}
 	${CMAKE_CURRENT_BINARY_DIR}
 )
+
+if ( UNIX )
+	INCLUDE_DIRECTORIES( ${CMAKE_SOURCE_DIR}/qpcap/qpcap )
+endif()
 
 ADD_EXECUTABLE ( ss2overlay
 	${App_sources}
@@ -59,11 +70,14 @@ ADD_EXECUTABLE ( ss2overlay
 	${UI_headers}
 )
 
-LINK_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/../qpcap/qpcap )
+if ( UNIX )
+	LINK_DIRECTORIES( ${CMAKE_CURRENT_BINARY_DIR}/../qpcap/qpcap )
+endif()
 
 
-TARGET_LINK_LIBRARIES( ss2overlay ${QT_LIBRARIES} qpcap ) 
+TARGET_LINK_LIBRARIES( ss2overlay ${QT_LIBRARIES} ) 
 
 if ( UNIX )
-		TARGET_LINK_LIBRARIES( ss2overlay Xext ) # for X11 access (click-through-window)
+	TARGET_LINK_LIBRARIES( ss2overlay qpcap )
+	TARGET_LINK_LIBRARIES( ss2overlay Xext ) # for X11 access (click-through-window)
 endif ( UNIX )
