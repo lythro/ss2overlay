@@ -286,8 +286,8 @@ vector<QPoint> ShootingAngleFinder::findAnglePoints(QPixmap* pixmap, QPoint orig
 			int drb = c.red() - c.blue();
 			drb = drb < 0 ? drb * -1 : drb;
 
-			if ((sum > 200 & drg < 30 && dgb < 30 && drb < 30)
-			 || (sum > 300 & drg < 50 && dgb < 50 && drb < 70))
+			if ((sum > 200 && drg < 30 && dgb < 30 && drb < 30)
+			 || (sum > 300 && drg < 50 && dgb < 50 && drb < 70))
 					v.push_back( p );
 		}
 	}

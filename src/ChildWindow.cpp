@@ -238,9 +238,9 @@ void ChildWindow::updateOverlay()
 
 			QPainter paint( &debugPixmap );
 			paint.setPen( QColor( 255, 255, 0 ) );
-			for (int i = 0; i < surface.size(); i++)
+			for (int i = 0; i < m_map.size(); i++)
 			{
-				paint.drawPoint( QPoint( i, surface[i] ) );
+				paint.drawPoint( QPoint( i, m_map[i] ) );
 			}
 			paint.end();
 
@@ -364,27 +364,30 @@ void ChildWindow::paintEvent(QPaintEvent* e)
 	}
 
 
-	// draw map-points/ lines
-	//cout << "map: " << m_map.size() << endl;
-
-	if (m_map.size() > 1)
+	if (m_settingsUi->checkBoxShowMap->isChecked())
 	{
-		float scale = ((float)(this->width())) / (m_map.size()-1);
-		QPoint last( 0, m_map[0] );
-
-		for (int i = 1; i < m_map.size(); i++)
+		// draw map-points/ lines
+		//cout << "map: " << m_map.size() << endl;
+		if (m_map.size() > 1)
 		{
-			QPoint tmp( i*scale, m_map[i] );
+			float scale = ((float)(this->width())) / (m_map.size()-1);
+			QPoint last( 0, m_map[0] );
 
-			p.setPen( QColor( 255, 0, 255 ) );
-			p.drawLine( last, tmp );
-			
-			p.setPen( QColor( 255, 255, 0 ) );
-			p.drawPoint( last );
-
-			last = tmp;
+			for (int i = 1; i < m_map.size(); i++)
+			{
+				QPoint tmp( i*scale, m_map[i] );
+	
+				p.setPen( QColor( 255, 0, 255 ) );
+				p.drawLine( last, tmp );
+				
+				p.setPen( QColor( 255, 255, 0 ) );
+				p.drawPoint( last );
+				
+				last = tmp;
+			}
 		}
 	}
+
 	// draw tracer-points
 	for (int i = 0; i < m_tracerPoints.size(); i++)
 	{

@@ -4,7 +4,9 @@
 #include "ui_childwindow.h"
 #include "ui_settings.h"
 
-#include "GameSniffer.h"
+#ifdef linux
+	#include "GameSniffer.h"
+#endif
 
 #include <QMainWindow>
 #include <QPixmap>
